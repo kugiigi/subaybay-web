@@ -10,6 +10,10 @@ body {
     position: relative;
 }
 
+ul, ol {
+    font-size: 17px;
+}
+
 #dashboard {
     display: none;
 }
@@ -136,6 +140,10 @@ body {
     color: #3eb34f;
 }
 
+.comments {
+    font-style: italic;
+}
+
 #container.details .list-view {
     background: transparent;
     transition: background 0.5s;
@@ -194,12 +202,13 @@ body {
 }
 
 #container .list-view ul li {
-/*
-    position: absolute;
-*/
+    display: inline-block;
     left: 0;
     right: 0;
+    width: 100%;
+/*
     height: 50px;
+*/
     border-color: #ddd;
     transition: transform 0.3s, opacity 0.3s 0.3s, border-color 0.3s 0.3s;
 }
@@ -212,6 +221,7 @@ body {
     border-left-width: 0px;
     border-right-width: 0px;
     border-bottom-color: #666666;
+    font-size: 15px;
 }
 
 #container .list-view ul li .value {
@@ -231,10 +241,12 @@ body {
     vertical-align: middle;
     border-radius: 50%;
     margin: 10px 15px;
+    max
 }
 
 #container .list-view ul li .right {
     float: right;
+    max-width: 200px;
 }
 
 #container .list-view ul li .right div {
