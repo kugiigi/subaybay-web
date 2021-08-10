@@ -1,0 +1,315 @@
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+    color: #ffffff;
+}
+
+body {
+    background: #111111;
+    position: relative;
+}
+
+#dashboard {
+    display: none;
+}
+
+.mdl-layout__header
+, .mdl-layout__drawer {
+    background: #111111;
+}
+
+.mdl-layout__drawer-button .material-icons {
+    position: absolute;
+    left: 25%;
+    top: 25%;
+}
+
+/**
+* Drawer
+**/
+.mdl-layout__drawer {
+    border-right: 1px solid #888888;
+}
+
+.mdl-layout__drawer .mdl-navigation .mdl-navigation__link {
+    color: #ffffff;
+}
+
+.mdl-layout__drawer .mdl-navigation .mdl-navigation__link.active:after {
+    content:'\2713';
+    font-size: 1.2em;
+    vertical-align: middle;
+    float: right;
+}
+
+/**
+* Persona Header / Navigation
+**/
+.persona-header {
+    overflow: visible;
+/*
+    background-color: #ffffff !important;
+*/
+    box-shadow: 0 3px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.persona-header .material-icons {
+    color: #767777 !important; /* Keep this !important */
+}
+
+.persona-header .mdl-layout__drawer-button {
+    background: transparent !important;
+    color: #767777 !important;
+    line-height: 52px;
+}
+
+.persona-header .mdl-navigation__link {
+    color: #767777 !important;
+    font-weight: 500 !important;
+    font-size: 15px !important;
+    text-transform: uppercase;
+}
+
+/* Navigation */
+.persona-navigation .mdl-navigation__link {
+    display: inline-block !important;
+    height: 60px !important;
+    line-height: 68px !important;
+    background-color: transparent !important; /*Keep this !important*/
+    border-bottom: 4px solid transparent !important;
+}
+
+.persona-navigation .mdl-navigation__link:hover {
+    border-bottom: 4px solid #00bcd4 !important;
+}
+
+/* Title */
+.persona-title {
+    margin: 0 auto;
+}
+
+/**
+* Persona Card Grid / Cards
+**/
+.persona-card-grid {
+    padding: 30px 0 !important;
+    max-width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Cards */
+.persona-card-wide.mdl-card {
+    width: 360px;
+}
+
+.persona-card-wide > .mdl-card__title {
+    color: #fff;
+    height: 200px;
+    background: url("https://getmdl.io/assets/demos/welcome_card.jpg") center / cover;
+    background-color: #00bcd4;
+}
+
+.persona-card-wide > .mdl-card__menu {
+    color: #fff;
+}
+
+#container {
+    width: 100%;
+    height: 100%%;
+    margin-top: -284px;
+    margin-left: -160px;
+    overflow: hidden;
+}
+
+#container .list-view ul {
+    list-style-type: none;
+    padding-inline-start: 0px;
+}
+
+.item-label {
+    color: #19b6ee;
+}
+
+.value-label {
+    color: #3eb34f;
+}
+
+#container.details .list-view {
+    background: transparent;
+    transition: background 0.5s;
+    pointer-events: none;
+}
+#container.details .list-view li {
+    transition: transform 0.3s, opacity 0.2s;
+}
+
+#container.details .list-view li:not(.active) {
+    opacity: 0;
+}
+
+#container.details .list-view li.active {
+    transform: translate3d(0, 140px, 0);
+    border-color: rgba(255, 255, 255, 0);
+    transition: transform 0.3s, opacity 0.2s, border-color 0.2s;
+}
+
+#container.details .list-view li.active:hover {
+    background: none;
+}
+
+#container.details .details-view .back {
+    transform: scale(1);
+}
+
+#container.details .details-view .background {
+    transform: translate3d(0, -40px, 0);
+    transition: transform 0.25s 0.05s;
+}
+#container.details .details-view li:nth-child(1) {
+    transform: translate3d(0, 0, 0);
+}
+
+#container.details .details-view li:nth-child(2) {
+    transform: translate3d(0, 0, 0);
+}
+
+#container.details .details-view li:nth-child(3) {
+    transform: translate3d(0, 0, 0);
+}
+
+#container.details .details-view li:nth-child(4) {
+    transform: translate3d(0, 0, 0);
+}
+
+#container .list-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    transition: background 0.3s 0.1s;
+}
+
+#container .list-view ul li {
+/*
+    position: absolute;
+*/
+    left: 0;
+    right: 0;
+    height: 50px;
+    border-color: #ddd;
+    transition: transform 0.3s, opacity 0.3s 0.3s, border-color 0.3s 0.3s;
+}
+
+#container .list-view li.section {
+    height: 40px;
+    border-style: solid;
+    border-bottom-width: 1px;
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-color: #666666;
+}
+
+#container .list-view ul li .value {
+    -webkit-font-smoothing: antialiased;
+}
+
+#container .list-view ul li:hover {
+/*
+    background: #888888;
+*/
+}
+
+#container .list-view ul li .left
+, #container .list-view ul li .right {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 50%;
+    margin: 10px 15px;
+}
+
+#container .list-view ul li .right {
+    float: right;
+}
+
+#container .list-view ul li .right div {
+    text-align: right;
+}
+
+#container .details-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+/*
+    background: #fff;
+*/
+}
+
+#container .details-view .background {
+    position: absolute;
+    top: 0;
+    height: 260px;
+    width: 100%;
+    background: url("http://mooxidesign.com/wp-content/uploads/2014/06/5-Polygon-Backgrounds.jpg");
+    transition: transform 0.25s;
+}
+
+#container .details-view .back {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 30px;
+    height: 30px;
+    background: url("https://cdn4.iconfinder.com/data/icons/wirecons-free-vector-icons/32/back-alt-128.png");
+    background-size: 100%;
+    border: 0;
+    transform: scale(0.1);
+    transition: transform 0.15s;
+    z-index: 1;
+}
+
+#container .details-view ul {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 225px;
+}
+
+#container .details-view li {
+    height: 70px;
+    line-height: 70px;
+    border-bottom: 1px solid #ddd;
+}
+
+#container .details-view li i {
+    font-size: 1.2rem;
+    margin: 0 15px;
+}
+
+#container .details-view li:nth-child(1) {
+    transform: translate3d(0, 30px, 0);
+    transition: transform 0.3s 0s;
+}
+
+#container .details-view li:nth-child(2) {
+    transform: translate3d(0, 35px, 0);
+    transition: transform 0.3s 0.02s;
+}
+
+#container .details-view li:nth-child(3) {
+    transform: translate3d(0, 40px, 0);
+    transition: transform 0.3s 0.04s;
+}
+
+#container .details-view li:nth-child(4) {
+    transform: translate3d(0, 45px, 0);
+    transition: transform 0.3s 0.06s;
+}
