@@ -5,6 +5,10 @@
     color: #ffffff;
 }
 
+:root {
+  color-scheme: dark;
+}
+
 body {
     background: #111111;
     position: relative;
@@ -18,15 +22,65 @@ ul, ol {
     display: none;
 }
 
+.mdl-layout__container {
+    max-width: 500px;
+    position: relative;
+    margin: 0 auto;
+}
+
 .mdl-layout__header
 , .mdl-layout__drawer {
     background: #111111;
+}
+
+
+.mdl-layout__header-row {
+    padding: 0 10px 0 72px;
+}
+
+@media screen and (max-width: 1024px) {
+    .mdl-layout__header-row {
+        padding: 0 16px 0 72px;
+    }
 }
 
 .mdl-layout__drawer-button .material-icons {
     position: absolute;
     left: 25%;
     top: 25%;
+}
+
+.mdl-menu__outline.mdl-menu--bottom-right {
+    background: #333333;
+}
+
+.mdl-menu__item {
+    color: #ffffff;
+}
+
+/**
+* ScrollBar
+**/
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: #888888;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+	background: #666666; 
 }
 
 /**
@@ -52,14 +106,29 @@ ul, ol {
 **/
 .persona-header {
     overflow: visible;
-/*
-    background-color: #ffffff !important;
-*/
     box-shadow: 0 3px 2px rgba(0, 0, 0, 0.1) !important;
 }
 
 .persona-header .material-icons {
     color: #767777 !important; /* Keep this !important */
+}
+
+.persona-header .mdl-menu.mdl-menu--bottom-right {
+    padding: 10px;
+}
+
+.persona-header .mdl-menu.mdl-menu--bottom-right > * {
+    vertical-align: middle;
+}
+
+.persona-header .mdl-menu.mdl-menu--bottom-right .material-icons {
+    color: #ffffff !important;
+    display: inline;
+}
+
+.persona-header .mdl-menu.mdl-menu--bottom-right .mdl-menu__item {
+    display: inline;
+    font-size: 18px;
 }
 
 .persona-header .mdl-layout__drawer-button {
@@ -91,6 +160,7 @@ ul, ol {
 /* Title */
 .persona-title {
     margin: 0 auto;
+    font-size: 25px;
 }
 
 /**
@@ -119,17 +189,44 @@ ul, ol {
     color: #fff;
 }
 
+/**
+* Navigation Row
+**/
+.navigation-row {
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#criteria_button {
+    width: auto;
+    height: 100%;
+    border-radius: 0%;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    text-align: left;
+    text-indent: 15px;
+    text-transform: none;
+}
+
+#prev_button
+,#next_button {
+    width: 50px;
+    height: 100%;
+}
+
 #container {
     width: 100%;
-    height: 100%%;
-    margin-top: -284px;
-    margin-left: -160px;
-    overflow: hidden;
+    height: 100%;
 }
 
 #container .list-view ul {
     list-style-type: none;
     padding-inline-start: 0px;
+    margin-block-start: 0px;
 }
 
 .item-label {
@@ -167,36 +264,7 @@ ul, ol {
     background: none;
 }
 
-#container.details .details-view .back {
-    transform: scale(1);
-}
-
-#container.details .details-view .background {
-    transform: translate3d(0, -40px, 0);
-    transition: transform 0.25s 0.05s;
-}
-#container.details .details-view li:nth-child(1) {
-    transform: translate3d(0, 0, 0);
-}
-
-#container.details .details-view li:nth-child(2) {
-    transform: translate3d(0, 0, 0);
-}
-
-#container.details .details-view li:nth-child(3) {
-    transform: translate3d(0, 0, 0);
-}
-
-#container.details .details-view li:nth-child(4) {
-    transform: translate3d(0, 0, 0);
-}
-
-#container .list-view {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+#container .list-view { 
     z-index: 1;
     transition: background 0.3s 0.1s;
 }
@@ -228,11 +296,11 @@ ul, ol {
     -webkit-font-smoothing: antialiased;
 }
 
-#container .list-view ul li:hover {
 /*
+#container .list-view ul li:hover {
     background: #888888;
-*/
 }
+*/
 
 #container .list-view ul li .left
 , #container .list-view ul li .right {
@@ -241,7 +309,6 @@ ul, ol {
     vertical-align: middle;
     border-radius: 50%;
     margin: 10px 15px;
-    max
 }
 
 #container .list-view ul li .right {
@@ -251,77 +318,4 @@ ul, ol {
 
 #container .list-view ul li .right div {
     text-align: right;
-}
-
-#container .details-view {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 0;
-/*
-    background: #fff;
-*/
-}
-
-#container .details-view .background {
-    position: absolute;
-    top: 0;
-    height: 260px;
-    width: 100%;
-    background: url("http://mooxidesign.com/wp-content/uploads/2014/06/5-Polygon-Backgrounds.jpg");
-    transition: transform 0.25s;
-}
-
-#container .details-view .back {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    width: 30px;
-    height: 30px;
-    background: url("https://cdn4.iconfinder.com/data/icons/wirecons-free-vector-icons/32/back-alt-128.png");
-    background-size: 100%;
-    border: 0;
-    transform: scale(0.1);
-    transition: transform 0.15s;
-    z-index: 1;
-}
-
-#container .details-view ul {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 225px;
-}
-
-#container .details-view li {
-    height: 70px;
-    line-height: 70px;
-    border-bottom: 1px solid #ddd;
-}
-
-#container .details-view li i {
-    font-size: 1.2rem;
-    margin: 0 15px;
-}
-
-#container .details-view li:nth-child(1) {
-    transform: translate3d(0, 30px, 0);
-    transition: transform 0.3s 0s;
-}
-
-#container .details-view li:nth-child(2) {
-    transform: translate3d(0, 35px, 0);
-    transition: transform 0.3s 0.02s;
-}
-
-#container .details-view li:nth-child(3) {
-    transform: translate3d(0, 40px, 0);
-    transition: transform 0.3s 0.04s;
-}
-
-#container .details-view li:nth-child(4) {
-    transform: translate3d(0, 45px, 0);
-    transition: transform 0.3s 0.06s;
 }

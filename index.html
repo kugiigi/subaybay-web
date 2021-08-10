@@ -28,20 +28,15 @@
             <div class="mdl-layout__header-row">
                 <!-- Title -->
                 <span class="persona-title mdl-layout-title">Lolo Papi</span>
-                <!-- Navigation -->
-                <!--
-          <nav class="persona-navigation mdl-navigation mdl-layout--large-screen-only">
-            <a class="mdl-navigation__link" href="">Link</a>
-          </nav>
-          -->
 
                 <!-- Ellipses -->
                 <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
-            <i class="material-icons">more_vert</i>
-          </button>
+                    <i class="material-icons">more_vert</i>
+                </button>
 
                 <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
-                    <li class="mdl-menu__item">Log Out</li>
+                    <i class="material-icons">filter_list</i>
+                    <li class="mdl-menu__item">Filter</li>
                 </ul>
             </div>
         </header>
@@ -61,6 +56,17 @@
         <!-- Content -->
         <main class="mdl-layout__content">
             <div id="container">
+                <div class="navigation-row">
+                    <button id="criteria_button" class="mdl-button mdl-js-button mdl-button--icon">
+                        Sun, Aug 08
+                    </button>
+                    <button id="prev_button" class="mdl-button mdl-js-button mdl-button--icon">
+                        <i class="material-icons">chevron_left</i>
+                    </button>
+                    <button id="next_button" class="mdl-button mdl-js-button mdl-button--icon">
+                        <i class="material-icons">chevron_right</i>
+                    </button>
+                </div>
                 <div class="list-view">
                     <ul>
                         <li class="section">
