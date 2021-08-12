@@ -8,16 +8,37 @@
     <link rel=”icon” href="assets/favicon.svg">
     <link rel="apple-touch-icon" href="assets/favicon.png">
     <title>Subaybay</title>
-    <!-- Material Design Lite -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.5.0/sql-wasm.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Material Design Lite -->
     <script src="https://code.getmdl.io/1.2.0/material.min.js"></script>
-    <script src="js/main.js"></script>
-    <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css"><link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css">
+
     <!-- Roboto Font -->
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
     <!-- Material Design icon font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    <script src="js/main.js"></script>    
+    <link rel="stylesheet" href="css/main.css">
+
+    <script>
+        const xhr = new XMLHttpRequest();
+        // For example: https://github.com/lerocha/chinook-database/raw/master/ChinookDatabase/DataSources/Chinook_Sqlite.sqlite
+        xhr.open('GET', 'https://kugicloud.owncube.com/index.php/apps/sharingpath/kugiigi/Devices/FamilyPhone/Subaybay/Data/8df23b9827c6d1d8e6f53ae822fa4f0a.sqlite', true);
+        xhr.responseType = 'arraybuffer';
+
+        xhr.onload = e => {
+          const uInt8Array = new Uint8Array(xhr.response);
+          const db = new SQL.Database(uInt8Array);
+          const contents = db.exec("SELECT * FROM my_table");
+          console.log("pasok!")
+          // contents is now [{columns:['col1','col2',...], values:[[first row], [second row], ...]}]
+        };
+        xhr.send();
+  </script>
 </head>
 
 <body>
@@ -39,6 +60,17 @@
                     <li class="mdl-menu__item">Filter</li>
                 </ul>
             </div>
+            <div class="navigation-row">
+                    <button id="criteria_button" class="mdl-button mdl-js-button mdl-button--icon">
+                        Sun, Aug 08
+                    </button>
+                    <button id="prev_button" class="mdl-button mdl-js-button mdl-button--icon">
+                        <i class="material-icons">chevron_left</i>
+                    </button>
+                    <button id="next_button" class="mdl-button mdl-js-button mdl-button--icon">
+                        <i class="material-icons">chevron_right</i>
+                    </button>
+                </div>
         </header>
 
         <!-- Drawer -->
@@ -56,19 +88,70 @@
         <!-- Content -->
         <main class="mdl-layout__content">
             <div id="container">
-                <div class="navigation-row">
-                    <button id="criteria_button" class="mdl-button mdl-js-button mdl-button--icon">
-                        Sun, Aug 08
-                    </button>
-                    <button id="prev_button" class="mdl-button mdl-js-button mdl-button--icon">
-                        <i class="material-icons">chevron_left</i>
-                    </button>
-                    <button id="next_button" class="mdl-button mdl-js-button mdl-button--icon">
-                        <i class="material-icons">chevron_right</i>
-                    </button>
-                </div>
                 <div class="list-view">
                     <ul>
+                        <li class="section">
+                            <span class="left">03:11 PM</span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Blood Pressure</span>
+                            <span class="right">
+                                <div class="value value-label">136/99 mmHg</div>
+                            </span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Temperature</span>
+                            <span class="right">
+                                <div class="value value-label">37.5 C</div>
+                            </span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Oxygen</span>
+                            <span class="right">
+                                <div class="value value-label">98 %</div>
+                            </span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Heart Rate</span>
+                            <span class="right">
+                                <div class="value value-label">78 bpm</div>
+                            </span>
+                        </li>
+                        <li class="section">
+                            <span class="left">05:36 PM</span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Blood Pressure</span>
+                            <span class="right">
+                                <div class="value value-label">136/99 mmHg</div>
+                            </span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Heart Rate</span>
+                            <span class="right">
+                                <div class="value value-label">78 bpm</div>
+                            </span>
+                        </li>
+                        <li class="section">
+                            <span class="left">07:25 PM</span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Urine</span>
+                            <span class="right">
+                                <div class="value value-label">100 ml</div>
+                                <div class="comments">malupit na comment na mejo mahaba kaya dapat magwrap</div>
+                            </span>
+                        </li>
+                        <li class="section">
+                            <span class="left">08:06 PM</span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Blood Sugar</span>
+                            <span class="right">
+                                <div class="value value-label">146 mg/dL</div>
+                                <div class="comments">before breakfast</div>
+                            </span>
+                        </li>
                         <li class="section">
                             <span class="left">03:11 PM</span>
                         </li>
