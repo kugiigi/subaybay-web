@@ -8,7 +8,8 @@
     <link rel=”icon” href="assets/favicon.svg">
     <link rel="apple-touch-icon" href="assets/favicon.png">
     <title>Subaybay</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.5.0/sql-wasm.min.js"></script>
+    <script src="https://unpkg.com/moment@2.29.1/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.5.0/sql-asm.js" integrity="sha512-GN8WQXcR3hdXTb8HOdRDGo/ZQ/us0It56dfpV9vW5aENM5WNE6njSDzyCyQfd73jcoG5u1SYpPrNQ3XRfgxH1Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     <!-- Material Design Lite -->
@@ -21,34 +22,28 @@
     <!-- Material Design icon font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     
-    <script src="js/main.js"></script>    
+    <script src="js/main.js"></script>
+    <script src="js/functions.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/dataUtils.js"></script>
     <link rel="stylesheet" href="css/main.css">
-
-    <script>
-        const xhr = new XMLHttpRequest();
-        // For example: https://kugicloud.owncube.com/nextcloud/public.php/webdav/8df23b9827c6d1d8e6f53ae822fa4f0a.sqlite
-        xhr.open('GET', 'https://kugicloud.owncube.com/index.php/s/gXYqEcDTE8pob4W/download', true);
-        xhr.responseType = 'arraybuffer';
-
-        xhr.onload = e => {
-          const uInt8Array = new Uint8Array(xhr.response);
-          const db = new SQL.Database(uInt8Array);
-          const contents = db.exec("SELECT * FROM my_table");
-          console.log("pasok!")
-          // contents is now [{columns:['col1','col2',...], values:[[first row], [second row], ...]}]
-        };
-        xhr.send();
-  </script>
 </head>
 
 <body>
+    <!-- Loading element shown until things are ready like database -->
+    <div class="loader">
+        <svg class="circular">
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"></circle>
+        </svg>
+    </div>
+
     <!-- Layout Wrapper -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 
         <header class="persona-header mdl-layout__header">
             <div class="mdl-layout__header-row">
                 <!-- Title -->
-                <span class="persona-title mdl-layout-title">Lolo Papi</span>
+                <span class="persona-title mdl-layout-title">Select a profile</span>
 
                 <!-- Ellipses -->
                 <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
@@ -56,18 +51,17 @@
                 </button>
 
                 <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
-                    <i class="material-icons">filter_list</i>
-                    <li class="mdl-menu__item">Filter</li>
+                    <li class="mdl-menu__item"><i class="material-icons">filter_list</i><span>Filter</span></li>
+                    <li class="mdl-menu__item" onclick="App.listPage.setDate(moment().format())"><i class="material-icons">today</i><span>View Today</span></li>
                 </ul>
             </div>
             <div class="navigation-row">
-                    <button id="criteria_button" class="mdl-button mdl-js-button mdl-button--icon">
-                        Sun, Aug 08
+                    <button id="criteria_button" class="mdl-button mdl-js-button mdl-button--icon" data-date="">
                     </button>
-                    <button id="prev_button" class="mdl-button mdl-js-button mdl-button--icon">
+                    <button id="prev_button" class="mdl-button mdl-js-button mdl-button--icon" onclick="App.listPage.previousDay();">
                         <i class="material-icons">chevron_left</i>
                     </button>
-                    <button id="next_button" class="mdl-button mdl-js-button mdl-button--icon">
+                    <button id="next_button" class="mdl-button mdl-js-button mdl-button--icon" onclick="App.listPage.nextDay();">
                         <i class="material-icons">chevron_right</i>
                     </button>
                 </div>
@@ -75,12 +69,38 @@
 
         <!-- Drawer -->
         <div class="mdl-layout__drawer">
+            <div id="database_url_div">
+                <div class="material-textbox" id="database_url-input">
+                  <input id="database_url" class="material-input" required="required" onKeyUp="App.setDatabaseUrl($(this).val());"/>
+                  <span class="material-label">Database URL</span>
+                </div>
+<!--
+                <div class="top-label">Database URL</div>
+                <input id="database_url" type="text" id="fname" name="fname" onKeyUp="App.setDatabaseUrl($(this).val());">
+-->
+                <button id="apply_db_btn" class="pure-material-button-contained" onclick="App.updateData();">Update Data</button>
+                <label class="pure-material-checkbox">
+                  <input id="demo_checkbox" type="checkbox" onclick="App.toggleDemo()">
+                  <span>Demo Mode</span>
+                </label>
+                <label class="pure-material-checkbox">
+                  <input id="cors_checkbox" type="checkbox" onclick="App.toggleCors()">
+                  <span>Enable CORS proxy<br>Try this if your database won't load<br>Proxy URL: <i>https://api.codetabs.com/v1/proxy?quest=</i></span>
+                </label>
+<!--
+                <div>
+                    <input type="checkbox" id="demo_checkbox" name="demo-mode" onclick="App.toggleDemo();">
+                    <label for="demo-mode">Demo data</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="cors_checkbox" name="cors-enable" onclick="App.toggleCors();">
+                    <label for="cors-enable">Enable CORS proxy<br>Try this if your database won't load<br>Proxy URL: <i>https://api.codetabs.com/v1/proxy?quest=</i></label>
+                </div>
+-->
+            </div>
             <span class="mdl-layout-title">Profiles</span>
             <nav class="mdl-navigation">
-                <a class="mdl-navigation__link" href="">Default</a>
-                <a class="mdl-navigation__link active" href="">Lolo Papi</a>
-                <a class="mdl-navigation__link" href="">Emaly</a>
-                <a class="mdl-navigation__link" href="">Lala</a>
+            <!--<a class="mdl-navigation__link active" href="">Default</a>-->
             </nav>
         </div>
         <!-- /Drawer -->
