@@ -18,7 +18,7 @@ var App = {
         , VALUES_LIST: ".mdl-layout__content .list-view ul"
         , LIST_CONTAINER: "#container"
         , DATABASE_URL: "#database_url"
-        , DEMO_URL: "https://github.com/kugiigi/subaybay-web/raw/devel/demo/8df23b9827c6d1d8e6f53ae822fa4f0a.sqlite"
+        , DEMO_URL: "https://github.com/kugiigi/subaybay-web/raw/main/demo/8df23b9827c6d1d8e6f53ae822fa4f0a.sqlite"
     },
     init: function() {
         // For testing only
