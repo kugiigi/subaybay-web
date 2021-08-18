@@ -54,8 +54,9 @@
                 </button>
 
                 <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
-                    <li class="mdl-menu__item"><i class="material-icons">filter_list</i><span>Filter</span></li>
+                    <li class="mdl-menu__item" onclick="App.updateData();"><i class="material-icons">refresh</i><span>Refresh Data</span></li>
                     <li class="mdl-menu__item" onclick="App.listPage.setDate(moment().format())"><i class="material-icons">today</i><span>View Today</span></li>
+                    <li class="mdl-menu__item"><i class="material-icons">filter_list</i><span>Filter</span></li>
                 </ul>
             </div>
             <div class="navigation-row">

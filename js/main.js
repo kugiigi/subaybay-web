@@ -18,7 +18,7 @@ var App = {
         , VALUES_LIST: ".mdl-layout__content .list-view ul"
         , LIST_CONTAINER: "#container"
         , DATABASE_URL: "#database_url"
-        , DEMO_URL: "https://github.com/kugiigi/subaybay-web/raw/devel_db/8df23b9827c6d1d8e6f53ae822fa4f0a.sqlite"
+        , DEMO_URL: "https://github.com/kugiigi/subaybay-web/raw/devel/demo/8df23b9827c6d1d8e6f53ae822fa4f0a.sqlite"
     },
     init: function() {
         // For testing only
@@ -81,13 +81,19 @@ var App = {
         App.listPage.reset();
 
         let _dbUrl = "";
-        if (App.demoMode()) {
+        let _dbUserUrl = $(App.constants.DATABASE_URL).val();
+        let _demoMode = App.demoMode()
+        if (_demoMode) {
             _dbUrl = App.constants.DEMO_URL;
         } else {
-            _dbUrl = $(App.constants.DATABASE_URL).val();
+            _dbUrl = _dbUserUrl;
         }
-
-        this.initSql(_dbUrl, App.corsEnabled())
+        
+        if (_dbUserUrl == "" && !_demoMode) {
+            this.setDBError("<-- Set database source");
+        } else {
+            this.initSql(_dbUrl, App.corsEnabled())
+        }
     },
     initSql: async function(__databaseUrl, __corsEnabled) {
         try {
@@ -109,12 +115,14 @@ var App = {
             // Tags the document to signal that the database is ready
             $("body").attr("db-ready","");
         } catch (e) {
-            console.log(e)
-            // Tags the document to signal that the database is ready
-            $("body").attr("db-error","");
-            $(App.constants.LIST_CONTAINER).attr("data-error","");
-            this.setProfileName("Error loading database");
+            this.setDBError("Error loading database");
         }
+    },
+    setDBError: function(__errorTitle) {
+        // Tags the document to signal that the database is ready
+        $("body").attr("db-error","");
+        $(App.constants.LIST_CONTAINER).attr("data-error","");
+        this.setProfileName(__errorTitle);
     },
     clearLocalStorage: function() {
         localStorage.clear();
@@ -175,7 +183,7 @@ var App = {
         }
 
         if (!_activeProfileExists) {
-            this.setProfileName("Select a profile");
+            this.setProfileName("<-- Select a profile");
         }
     },
     selectProfile: function(__obj) {
