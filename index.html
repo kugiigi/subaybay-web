@@ -8,52 +8,93 @@
     <link rel=”icon” href="assets/favicon.svg">
     <link rel="apple-touch-icon" href="assets/favicon.png">
     <title>Subaybay</title>
-    <!-- Material Design Lite -->
+    <script src="https://unpkg.com/moment@2.29.1/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.5.0/sql-asm.js" integrity="sha512-GN8WQXcR3hdXTb8HOdRDGo/ZQ/us0It56dfpV9vW5aENM5WNE6njSDzyCyQfd73jcoG5u1SYpPrNQ3XRfgxH1Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Material Design Lite -->
     <script src="https://code.getmdl.io/1.2.0/material.min.js"></script>
-    <script src="js/main.js"></script>
-    <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css"><link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css">
+
+    <link rel="stylesheet" href="css/materialize_custom.css">
+
     <!-- Roboto Font -->
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
     <!-- Material Design icon font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    <script src="js/main.js"></script>
+    <script src="js/functions.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/dataUtils.js"></script>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Loading element shown until things are ready like database -->
+    <div class="loader">
+        <svg class="circular">
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"></circle>
+        </svg>
+    </div>
+
     <!-- Layout Wrapper -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 
         <header class="persona-header mdl-layout__header">
             <div class="mdl-layout__header-row">
                 <!-- Title -->
-                <span class="persona-title mdl-layout-title">Lolo Papi</span>
-                <!-- Navigation -->
-                <!--
-          <nav class="persona-navigation mdl-navigation mdl-layout--large-screen-only">
-            <a class="mdl-navigation__link" href="">Link</a>
-          </nav>
-          -->
+                <span class="persona-title mdl-layout-title"><-- Set database source</span>
 
                 <!-- Ellipses -->
                 <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
-            <i class="material-icons">more_vert</i>
-          </button>
+                    <i class="material-icons">more_vert</i>
+                </button>
 
                 <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
-                    <li class="mdl-menu__item">Log Out</li>
+                    <li class="mdl-menu__item" onclick="App.updateData();"><i class="material-icons">refresh</i><span>Refresh Data</span></li>
+                    <li class="mdl-menu__item" onclick="App.listPage.setDate(moment().format())"><i class="material-icons">today</i><span>View Today</span></li>
+                    <li class="mdl-menu__item"><i class="material-icons">filter_list</i><span>Filter</span></li>
                 </ul>
             </div>
+            <div class="navigation-row">
+<!--
+                    <label for="">Date</label>
+                    <input type="text" class="datepicker">
+-->
+                    <button id="criteria_button" class="datepicker mdl-button mdl-js-button mdl-button--icon date-label" data-date="">
+                    </button>
+                    <button id="prev_button" class="mdl-button mdl-js-button mdl-button--icon" onclick="App.listPage.previousDay();">
+                        <i class="material-icons">chevron_left</i>
+                    </button>
+                    <button id="next_button" class="mdl-button mdl-js-button mdl-button--icon" onclick="App.listPage.nextDay();">
+                        <i class="material-icons">chevron_right</i>
+                    </button>
+                </div>
         </header>
 
         <!-- Drawer -->
         <div class="mdl-layout__drawer">
+            <div id="database_url_div">
+                <div class="material-textbox" id="database_url-input">
+                  <input id="database_url" class="material-input" required="required" onKeyUp="App.setDatabaseUrl($(this).val());"/>
+                  <span class="material-label">Database URL</span>
+                </div>
+                <button id="apply_db_btn" class="pure-material-button-contained" onclick="App.updateData();">Update Data</button>
+                <label class="pure-material-checkbox">
+                  <input id="demo_checkbox" type="checkbox" onclick="App.toggleDemo()">
+                  <span>Demo Mode</span>
+                </label>
+                <label class="pure-material-checkbox">
+                  <input id="cors_checkbox" type="checkbox" onclick="App.toggleCors()">
+                  <span>Enable CORS proxy<br>Try this if your database won't load<br>Proxy URL: <i>https://api.codetabs.com/v1/proxy?quest=</i></span>
+                </label>
+            </div>
             <span class="mdl-layout-title">Profiles</span>
             <nav class="mdl-navigation">
-                <a class="mdl-navigation__link" href="">Default</a>
-                <a class="mdl-navigation__link active" href="">Lolo Papi</a>
-                <a class="mdl-navigation__link" href="">Emaly</a>
-                <a class="mdl-navigation__link" href="">Lala</a>
+            <!--<a class="mdl-navigation__link active" href="">Default</a>-->
             </nav>
         </div>
         <!-- /Drawer -->
@@ -61,8 +102,79 @@
         <!-- Content -->
         <main class="mdl-layout__content">
             <div id="container">
+                <!-- Loading element shown when loading data -->
+                <div class="loader">
+                    <svg class="circular">
+                        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"></circle>
+                    </svg>
+                </div>
+                <div class="list-no-data">
+                    <span>No data</span>
+                </div>
                 <div class="list-view">
                     <ul>
+                        <li class="section">
+                            <span class="left">03:11 PM</span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Blood Pressure</span>
+                            <span class="right">
+                                <div class="value value-label">136/99 mmHg</div>
+                            </span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Temperature</span>
+                            <span class="right">
+                                <div class="value value-label">37.5 C</div>
+                            </span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Oxygen</span>
+                            <span class="right">
+                                <div class="value value-label">98 %</div>
+                            </span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Heart Rate</span>
+                            <span class="right">
+                                <div class="value value-label">78 bpm</div>
+                            </span>
+                        </li>
+                        <li class="section">
+                            <span class="left">05:36 PM</span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Blood Pressure</span>
+                            <span class="right">
+                                <div class="value value-label">136/99 mmHg</div>
+                            </span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Heart Rate</span>
+                            <span class="right">
+                                <div class="value value-label">78 bpm</div>
+                            </span>
+                        </li>
+                        <li class="section">
+                            <span class="left">07:25 PM</span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Urine</span>
+                            <span class="right">
+                                <div class="value value-label">100 ml</div>
+                                <div class="comments">malupit na comment na mejo mahaba kaya dapat magwrap</div>
+                            </span>
+                        </li>
+                        <li class="section">
+                            <span class="left">08:06 PM</span>
+                        </li>
+                        <li class="item">
+                            <span class="left item-label">Blood Sugar</span>
+                            <span class="right">
+                                <div class="value value-label">146 mg/dL</div>
+                                <div class="comments">before breakfast</div>
+                            </span>
+                        </li>
                         <li class="section">
                             <span class="left">03:11 PM</span>
                         </li>
