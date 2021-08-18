@@ -1,4 +1,7 @@
-$(function() {
+//~ $(function() {
+$(document).ready(function(){
+    //~ $('#criteria_button').datepicker();
+    $('.datepicker').datepicker();
     App.init();
 });
 
@@ -12,6 +15,8 @@ var App = {
         , PROFILES_LIST: ".mdl-layout__drawer .mdl-navigation"
         , PROFILE_TITLE: ".persona-header .persona-title.mdl-layout-title"
         , PROFILE_ACTIVE: ".mdl-layout__drawer .mdl-navigation .mdl-navigation__link.active"
+        , VALUES_LIST: ".mdl-layout__content .list-view ul"
+        , LIST_CONTAINER: "#container"
         , DATABASE_URL: "#database_url"
         , DEMO_URL: "https://github.com/kugiigi/subaybay-web/raw/devel_db/8df23b9827c6d1d8e6f53ae822fa4f0a.sqlite"
     },
@@ -48,14 +53,6 @@ var App = {
         // Setup Sql Database
         this.setupDBObserver();
         this.updateData();
-        //~ let _dbUrl = "";
-        //~ if (App.demoMode()) {
-            //~ _dbUrl = App.constants.DEMO_URL;
-        //~ } else {
-            //~ _dbUrl = $(App.constants.DATABASE_URL).val();
-        //~ }
-
-        //~ this.initSql(_dbUrl, App.corsEnabled())
         
         // Setup observer for the date in the list page
         this.listPage.setupDateObserver()
@@ -72,6 +69,7 @@ var App = {
                 for(const mutation of mutationsList) {
                     if (mutation.type === "attributes" && mutation.attributeName === "db-ready") {
                         App.listProfiles();
+                        App.listPage.listValues()
                     }
                 }
             });
@@ -80,9 +78,7 @@ var App = {
         }
     },
     updateData: function() {
-        // Reset db attributes
-        $("body").removeAttr("db-ready");
-        $("body").removeAttr("db-error");
+        App.listPage.reset();
 
         let _dbUrl = "";
         if (App.demoMode()) {
@@ -95,6 +91,9 @@ var App = {
     },
     initSql: async function(__databaseUrl, __corsEnabled) {
         try {
+            // Reset db object
+            Database.db = null;
+
             let _dbUrl = "";
             if (__corsEnabled) {
                 _dbUrl = this.corsProxyURL(__databaseUrl);
@@ -113,7 +112,8 @@ var App = {
             console.log(e)
             // Tags the document to signal that the database is ready
             $("body").attr("db-error","");
-            this.setProfileName("Database Error");
+            $(App.constants.LIST_CONTAINER).attr("data-error","");
+            this.setProfileName("Error loading database");
         }
     },
     clearLocalStorage: function() {
@@ -156,6 +156,8 @@ var App = {
 
         let _profilesList = DataUtils.profiles.list();
 
+        let _activeProfileExists = false;
+
         for (let i = 0; i < _profilesList.length; i++) {
             let _activeAttr = "";
             let _profileId = _profilesList[i].profile_id;
@@ -164,16 +166,21 @@ var App = {
             if (localStorage.activeProfile == _profileId) {
                 _activeAttr = " active";
                 this.setProfileName(_displayName);
+                _activeProfileExists = true;
             }
 
             let _htmlCode = "<a class='mdl-navigation__link" + _activeAttr + "' data-id='" + _profileId + "'  data-name='" + _displayName 
                         + "' onclick='App.selectProfile(this);'>" + _displayName + "<i class='material-icons'>check</i></a>";
             $(App.constants.PROFILES_LIST).append(_htmlCode);
         }
+
+        if (!_activeProfileExists) {
+            this.setProfileName("Select a profile");
+        }
     },
     selectProfile: function(__obj) {
         localStorage.activeProfile = $(__obj).attr("data-id");
-        //~ this.setProfileName($(__obj).text());
+
         this.setProfileName($(__obj).attr("data-name"));
 
         // Remove active class from current active
@@ -181,6 +188,11 @@ var App = {
 
         // Set active class to new current active
         $(__obj).addClass("active")
+
+        // Update data
+        if (Database.db) {
+            App.listPage.listValues()
+        }
     },
     setProfileName: function(__profileName) {
         $(App.constants.PROFILE_TITLE).text(__profileName);
@@ -196,9 +208,21 @@ var App = {
             if(targetNode){
                 var observer = new MutationObserver(function(mutationsList, observer) {
                     for(const mutation of mutationsList) {
-                        if (mutation.type === "attributes" && mutation.attributeName === "data-date") {
-                            //~ console.log(mutation)
-                            App.listPage.setDateLabel(new Date(mutation.target.dataset.date))
+                        if (mutation.type === "attributes") {
+                            switch(mutation.attributeName) {
+                                case "data-date": 
+                                    //~ console.log(mutation)
+                                    App.listPage.setDateLabel(new Date(mutation.target.dataset.date))
+                                    if (Database.db) {
+                                        App.listPage.listValues()
+                                    }
+                                    break;
+                                case "value":
+                                    let _dateValue = moment(mutation.target.value, "MMM DD, YYYY").format()
+
+                                    $(App.constants.CRITERIA_BUTTON).attr("data-date", _dateValue)
+                                    break;
+                            }
                         }
                     }
                 });
@@ -206,8 +230,23 @@ var App = {
                 observer.observe(targetNode, config);
             }
         },
+        reset: function() {
+            // Reset container
+            $(App.constants.LIST_CONTAINER).removeAttr("data-ready")
+            $(App.constants.LIST_CONTAINER).removeAttr("data-error")
+            $(App.constants.LIST_CONTAINER).removeAttr("no-data")
+
+            // Clear list
+            $(App.constants.VALUES_LIST).empty();
+        },
+        getDate: function() {
+            return $(App.constants.CRITERIA_BUTTON).attr("data-date")
+        },
         setDate: function(__petsa) {
             $(App.constants.CRITERIA_BUTTON).attr("data-date", __petsa)
+            
+            // Set date in the date picker
+            $(App.constants.CRITERIA_BUTTON).datepicker('setDate', new Date(__petsa));
         },
         setDateLabel: function(__petsa) {
             var formattedDate = Functions.relativeDate(__petsa,"ddd, MMM DD", "Basic")
@@ -223,7 +262,65 @@ var App = {
             var currentDay = $(App.constants.CRITERIA_BUTTON).attr("data-date")
             var prevDay = Functions.subtractDays(new Date(currentDay), 1)
             App.listPage.setDate(prevDay)
-        }
+        },
+        listValues: function() {
+            App.listPage.reset();
+            // Reset container
+            //~ $(App.constants.LIST_CONTAINER).removeAttr("data-ready")
+            //~ $(App.constants.LIST_CONTAINER).removeAttr("no-data")
+        
+            let  _valuesListObj = $(App.constants.VALUES_LIST);
+            //~ // Clear list
+            //~ _valuesListObj.empty();
+
+            let _fromDate = Functions.formatDateCriteria(App.listPage.getDate())
+            let _toDate = Functions.formatDateCriteria(App.listPage.getDate())
+            let _resultsObj = DataUtils.values(localStorage.activeProfile).itemValues("all", "day", _fromDate, _toDate);
+            let _valuesList = _resultsObj.values;
+            let _prevTime = ""
+            let _currentTime = ""
+            let _sectionHtml = ""
+            let _itemName = ""
+            let _value = ""
+            let _unit = ""
+            let _comments = ""
+
+            for (let i = 0; i < _valuesList.length; i++) {
+                //~ console.log(_valuesList[i])
+                _currentTime = _valuesList[i].entryDate;
+                _itemName = _valuesList[i].itemName;
+                _value = _valuesList[i].values;
+                _unit = _valuesList[i].unit;
+                _comments = _valuesList[i].comments;
+
+                if (_prevTime !== _currentTime) {
+                    _sectionHtml = "<li class='list-section'><span class='left date-label'>" + _currentTime + "</span></li>"
+                    _valuesListObj.append(_sectionHtml);
+                }
+
+                let _htmlCode = "<li class=item'>"
+                                    + "<span class='left item-label'>" + _itemName + "</span>"
+                                    + "<span class='right'>"
+                                        + "<div class='value'>"
+                                            + "<span class='value value-label'>" + _value + "</span>"
+                                            + "<span class='unit unit-label'>" + _unit + "</span>"
+                                        + "</div>"
+                                        + "<div class='comments comments-label'>" + _comments + "</div>"
+                                    + "</span>"
+                                + "</li>"
+                ;
+                _valuesListObj.append(_htmlCode);
+
+                _prevTime = _currentTime;
+            }
+            
+            // Set main container attributes as basis when data is ready
+            $(App.constants.LIST_CONTAINER).attr("data-ready", "")
+            
+            if (_valuesList.length == 0) {
+                $(App.constants.LIST_CONTAINER).attr("no-data", "")
+            }
+        },
     }
 };
 

@@ -16,6 +16,8 @@
     <script src="https://code.getmdl.io/1.2.0/material.min.js"></script>
     <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css"><link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css">
 
+    <link rel="stylesheet" href="css/materialize_custom.css">
+
     <!-- Roboto Font -->
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
@@ -30,6 +32,7 @@
 </head>
 
 <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <!-- Loading element shown until things are ready like database -->
     <div class="loader">
         <svg class="circular">
@@ -43,7 +46,7 @@
         <header class="persona-header mdl-layout__header">
             <div class="mdl-layout__header-row">
                 <!-- Title -->
-                <span class="persona-title mdl-layout-title">Select a profile</span>
+                <span class="persona-title mdl-layout-title"><-- Set database source</span>
 
                 <!-- Ellipses -->
                 <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
@@ -56,7 +59,11 @@
                 </ul>
             </div>
             <div class="navigation-row">
-                    <button id="criteria_button" class="mdl-button mdl-js-button mdl-button--icon" data-date="">
+<!--
+                    <label for="">Date</label>
+                    <input type="text" class="datepicker">
+-->
+                    <button id="criteria_button" class="datepicker mdl-button mdl-js-button mdl-button--icon date-label" data-date="">
                     </button>
                     <button id="prev_button" class="mdl-button mdl-js-button mdl-button--icon" onclick="App.listPage.previousDay();">
                         <i class="material-icons">chevron_left</i>
@@ -74,10 +81,6 @@
                   <input id="database_url" class="material-input" required="required" onKeyUp="App.setDatabaseUrl($(this).val());"/>
                   <span class="material-label">Database URL</span>
                 </div>
-<!--
-                <div class="top-label">Database URL</div>
-                <input id="database_url" type="text" id="fname" name="fname" onKeyUp="App.setDatabaseUrl($(this).val());">
--->
                 <button id="apply_db_btn" class="pure-material-button-contained" onclick="App.updateData();">Update Data</button>
                 <label class="pure-material-checkbox">
                   <input id="demo_checkbox" type="checkbox" onclick="App.toggleDemo()">
@@ -87,16 +90,6 @@
                   <input id="cors_checkbox" type="checkbox" onclick="App.toggleCors()">
                   <span>Enable CORS proxy<br>Try this if your database won't load<br>Proxy URL: <i>https://api.codetabs.com/v1/proxy?quest=</i></span>
                 </label>
-<!--
-                <div>
-                    <input type="checkbox" id="demo_checkbox" name="demo-mode" onclick="App.toggleDemo();">
-                    <label for="demo-mode">Demo data</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="cors_checkbox" name="cors-enable" onclick="App.toggleCors();">
-                    <label for="cors-enable">Enable CORS proxy<br>Try this if your database won't load<br>Proxy URL: <i>https://api.codetabs.com/v1/proxy?quest=</i></label>
-                </div>
--->
             </div>
             <span class="mdl-layout-title">Profiles</span>
             <nav class="mdl-navigation">
@@ -108,6 +101,15 @@
         <!-- Content -->
         <main class="mdl-layout__content">
             <div id="container">
+                <!-- Loading element shown when loading data -->
+                <div class="loader">
+                    <svg class="circular">
+                        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"></circle>
+                    </svg>
+                </div>
+                <div class="list-no-data">
+                    <span>No data</span>
+                </div>
                 <div class="list-view">
                     <ul>
                         <li class="section">

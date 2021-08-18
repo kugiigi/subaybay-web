@@ -1,4 +1,14 @@
 var Functions = {
+    round: (number, decimalPlaces) => {
+        const factorOfTen = Math.pow(10, decimalPlaces)
+        return Math.round(number * factorOfTen) / factorOfTen
+    },
+    formatValue: function (format, sequence, value) {
+        return format.replace("%" + sequence, value)
+    },
+    formatDateCriteria: function (petsa) {
+        return moment(petsa).format("YYYY-MM-DD HH:mm:ss.SSS")
+    },
     addDays: function (petsa, days) {
         var momentDate = moment(petsa)
         return momentDate.add(days, 'day').format()

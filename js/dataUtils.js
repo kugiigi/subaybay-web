@@ -39,7 +39,7 @@ var DataUtils = DataUtils || (function (undefined) {
                 }
                 , dashList: function() {
                     var arrResults = Database.getDashItems();
-                    arrResults.unshift({ item_id: "all", display_name: i18n.tr("All"), display_format: "", unit: "", display_symbol: "", value_type: "", scope: "" })
+                    arrResults.unshift({ item_id: "all", display_name: "All", display_format: "", unit: "", display_symbol: "", value_type: "", scope: "" })
                     return arrResults
                 }
             }
@@ -63,7 +63,114 @@ var DataUtils = DataUtils || (function (undefined) {
                     return Database.editComment(entryDate, profile, comments);
                 }
                 , itemValues: function(itemId, scope, dateFrom, dateTo) {
-                    return Database.getItemValues(profile, itemId, scope, dateFrom, dateTo)
+                    let arrDBData = Database.getItemValues(profile, itemId, scope, dateFrom, dateTo)
+                    let arrResults = []
+                    let arrComputedResult = []
+                    let total = 0
+                    let average = 0
+                    let highest = 0
+                    let last = 0
+                    let txtEntryDate = ""
+                    let txtDisplayName = ""
+                    let txtItemId = ""
+                    let txtFieldId = ""
+                    let intPrecision = 0
+                    let intFieldSeq = 0
+                    let txtSymbol = ""
+                    let txtDisplayFormat = ""
+                    let valueCount = 0
+                    let currentEntryDate = ""
+                    let prevEntryDate = ""
+                    let currentItemId = ""
+                    let prevItemId = ""
+
+                    let dashItems = DataUtils.monitoritems.dashList()
+
+                    for (var i = 0; i < arrDBData.length; i++) {
+                        txtEntryDate = arrDBData[i].entry_date
+                        txtDisplayName = arrDBData[i].display_name
+                        txtItemId = arrDBData[i].item_id
+                        txtFieldId = arrDBData[i].field_id
+                        intPrecision = arrDBData[i].precision
+                        intFieldSeq = arrDBData[i].field_seq
+                        txtSymbol = arrDBData[i].display_symbol
+                        txtDisplayFormat = arrDBData[i].display_format
+
+                        realValue = Functions.round(arrDBData[i].value, intPrecision)
+                        txtComments = arrDBData[i].comments
+                        txtComments = txtComments ? txtComments : ""
+
+                        currentEntryDate = txtEntryDate
+                        currentItemId = txtItemId
+                        
+                        txtFormattedEntryDate = moment(txtEntryDate).format("hh:mm A")
+                        realValue = Functions.round(realValue, intPrecision)
+                        
+                        if (currentEntryDate !== prevEntryDate || currentItemId !== prevItemId) {
+                            total = total + realValue
+                            valueCount += 1
+                            txtFormattedValue = Functions.formatValue(txtDisplayFormat, intFieldSeq, realValue)
+                            last = { entryDate: txtFormattedEntryDate, value: txtFormattedValue }
+                            
+                            if (highest) {
+                                if (realValue > highest.value) {
+                                    highest = { entryDate: txtFormattedEntryDate, value: txtFormattedValue }
+                                } else if(realValue == highest.value) {
+                                    highest = { entryDate: highest.entryDate + ", " + txtFormattedEntryDate, value: txtFormattedValue }
+                                }
+                            } else {
+                                highest = { entryDate: txtFormattedEntryDate, value: txtFormattedValue }
+                            }
+
+                            arrResults.push({
+                                                 entryDate: txtFormattedEntryDate
+                                                 , entryDateId: txtEntryDate
+                                                 , itemName: txtDisplayName
+                                                 , itemId: txtItemId
+                                                 , fields:  [ { fieldId: txtFieldId, value: realValue } ]
+                                                 , values: txtFormattedValue
+                                                 , unit: txtSymbol
+                                                 , comments: txtComments
+                                             })
+                        } else {
+                            if (currentItemId == prevItemId) {
+                                currentIndex = arrResults.length - 1
+                                txtDisplayFormatWithValue = arrResults[currentIndex].values
+                                txtFormattedValue  = Functions.formatValue(txtDisplayFormatWithValue, intFieldSeq, realValue)
+
+                                last = { entryDate: txtFormattedEntryDate, value: txtFormattedValue }
+
+                                modelFields = arrResults[currentIndex].fields
+                                modelFields.push( { fieldId: txtFieldId, value: realValue } )
+                                arrResults[currentIndex].values = txtFormattedValue
+                            }
+                        }
+
+                        prevEntryDate = currentEntryDate
+                        prevItemId = currentItemId
+                        arrFields = []
+                    }
+
+                    total = Functions.round(total, intPrecision)
+                    average = Functions.round(total / valueCount, intPrecision)
+
+                    if (dashItems.indexOf("total") > -1) {
+                        arrComputedResult.push( { value_type: "total", value: total, unit: txtSymbol } )
+                    }
+
+                    if (dashItems.indexOf("average") > -1) {
+                        arrComputedResult.push( { value_type: "average", value: average, unit: txtSymbol } )
+                    }
+                    
+                    if (dashItems.indexOf("last") > -1) {
+                        arrComputedResult.push( { value_type: "last", value: last, unit: txtSymbol } )
+                    }
+                    
+                    if (dashItems.indexOf("highest") > -1) {
+                        arrComputedResult.push( { value_type: "highest", value: highest, unit: txtSymbol } )
+                    }
+
+                    return { values: arrResults, computed: arrComputedResult };
                 }
                 , dashList: function() {
                     var current, datesObj, currentItems, currentItem;
