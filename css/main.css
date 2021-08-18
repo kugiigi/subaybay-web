@@ -473,6 +473,11 @@ body[db-ready] .loader
 
 .mdl-layout__drawer .mdl-navigation .mdl-navigation__link {
     color: #ffffff;
+    cursor: pointer;
+}
+
+.mdl-layout__drawer .mdl-navigation .mdl-navigation__link:hover {
+    background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
 }
 
 .mdl-layout__drawer .mdl-navigation .mdl-navigation__link i.material-icons {
@@ -496,18 +501,18 @@ body[db-ready] .loader
     padding-top: 0px;
 }
 
-body.db-ready .mdl-layout__drawer > .mdl-layout__title
-, body.db-ready .mdl-layout__drawer > .mdl-layout-title
-, body.db-ready .mdl-layout__drawer .mdl-navigation .mdl-navigation__link {
-    display: block;
-}
-
 .mdl-layout__drawer > .mdl-layout__title
 , .mdl-layout__drawer > .mdl-layout-title
 , .mdl-layout__drawer .mdl-navigation .mdl-navigation__link {
     padding-left: 10px;
     padding-right: 10px;
     display: none;
+}
+
+body[db-ready] .mdl-layout__drawer > .mdl-layout__title
+, body[db-ready] .mdl-layout__drawer > .mdl-layout-title
+, body[db-ready] .mdl-layout__drawer .mdl-navigation .mdl-navigation__link {
+    display: block;
 }
 
 #database_url-input {
