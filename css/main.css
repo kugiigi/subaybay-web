@@ -416,10 +416,12 @@ body[db-ready] > .loader
 
 .comments-label {
     font-style: italic;
+    font-size: 17px;
 }
 
 .item-label {
     color: #19b6ee;
+    font-size: 20px;
 }
 
 .value-label {
