@@ -50,10 +50,12 @@ var App = {
         }
         
         // Check Qurrery Strings
-        let queryDBUrl = decodeURI(Functions.getQueryParams("dbsource", document.location));
+        let queryDBUrl = Functions.getQueryParams("dbsource", document.location);
         let queryDemo = Functions.getQueryParams("demo", document.location);
         let queryCors = Functions.getQueryParams("cors", document.location);
-        
+        console.log(queryDBUrl)
+        console.log(encodeURI(queryDBUrl))
+        console.log(decodeURI(queryDBUrl))
         if (queryDemo) {
             switch (queryDemo) {
                case "Y":
