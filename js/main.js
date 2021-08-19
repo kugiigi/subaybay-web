@@ -53,6 +53,7 @@ var App = {
         let queryDBUrl = decodeURIComponent(Functions.getQueryParams("dbsource", document.location));
         let queryDemo = Functions.getQueryParams("demo", document.location);
         let queryCors = Functions.getQueryParams("cors", document.location);
+        let queryProfile = Functions.getQueryParams("profile", document.location);
 
         if (queryDemo) {
             switch (queryDemo) {
@@ -79,6 +80,10 @@ var App = {
         if (queryDBUrl) {
             $(App.constants.DATABASE_URL).val(queryDBUrl)
             localStorage.databaseUrl = queryDBUrl;
+        }
+
+        if (queryProfile) {
+            localStorage.activeProfile = queryProfile;
         }
         
 
