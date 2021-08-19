@@ -1,6 +1,5 @@
 //~ $(function() {
 $(document).ready(function(){
-    //~ $('#criteria_button').datepicker();
     $('.datepicker').datepicker();
     App.init();
 });
@@ -30,11 +29,11 @@ var App = {
         }
 
         if (localStorage.getItem("demoMode") === null) {
-            localStorage.demoMode = true;
+            localStorage.demoMode = false;
         }
 
         if (localStorage.getItem("corsEnabled") === null) {
-            localStorage.corsEnabled = true;
+            localStorage.corsEnabled = false;
         }
 
         // Restore local storage values
@@ -48,6 +47,46 @@ var App = {
         
         if (localStorage.databaseUrl) { 
             $(App.constants.DATABASE_URL).val(localStorage.databaseUrl)
+        }
+
+        // Check Qurrery Strings
+        let queryDBUrl = Functions.getQueryParams("dbsource", document.location);
+        let queryDemo = Functions.getQueryParams("demo", document.location);
+        let queryCors = Functions.getQueryParams("cors", document.location);
+        let queryProfile = Functions.getQueryParams("profile", document.location);
+
+        if (queryDemo) {
+            switch (queryDemo) {
+               case "Y":
+                    App.setDemoMode(true);
+                    break;
+               case "N":
+                    App.setDemoMode(false);
+                    break;
+            }
+        }
+
+        if (queryCors) {
+            switch (queryCors) {
+               case "Y":
+                    App.setCors(true);
+                    break;
+               case "N":
+                    App.setCors(false);
+                    break;
+            }
+        }
+
+        if (queryDBUrl) {
+            console.log("DB: " + queryDBUrl)
+            let decodedDBUrl = decodeURIComponent(queryDBUrl);
+
+            $(App.constants.DATABASE_URL).val(decodedDBUrl)
+            localStorage.databaseUrl = decodedDBUrl;
+        }
+
+        if (queryProfile) {
+            localStorage.activeProfile = queryProfile;
         }
 
         // Setup Sql Database
