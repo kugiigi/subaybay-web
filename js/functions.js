@@ -1,4 +1,11 @@
 var Functions = {
+    getQueryParams: ( params, url ) => {
+        let href = url;
+        // this is an expression to get query strings
+        let regexp = new RegExp( '[?&]' + params + '=([^&#]*)', 'i' );
+        let qString = regexp.exec(href);
+        return qString ? qString[1] : null;
+    },
     round: (number, decimalPlaces) => {
         const factorOfTen = Math.pow(10, decimalPlaces)
         return Math.round(number * factorOfTen) / factorOfTen
