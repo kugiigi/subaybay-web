@@ -59,7 +59,7 @@ var App = {
                case "Y":
                     App.setDemoMode(true);
                     break;
-               case "N"
+               case "N":
                     App.setDemoMode(false);
                     break;
             }
@@ -70,7 +70,7 @@ var App = {
                case "Y":
                     App.setCors(true);
                     break;
-               case "N"
+               case "N":
                     App.setCors(false);
                     break;
             }
@@ -78,6 +78,7 @@ var App = {
 
         if (queryDBUrl) {
             $(App.constants.DATABASE_URL).val(queryDBUrl)
+            localStorage.databaseUrl = queryDBUrl;
         }
         
 
