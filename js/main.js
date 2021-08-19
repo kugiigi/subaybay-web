@@ -50,9 +50,9 @@ var App = {
         }
         
         // Check Qurrery Strings
-        let queryDBUrl = Functions.getQueryParams("dbsource", doucment.location);
-        let queryDemo = Functions.getQueryParams("demo", doucment.location);
-        let queryCors = Functions.getQueryParams("cors", doucment.location);
+        let queryDBUrl = Functions.getQueryParams("dbsource", document.location);
+        let queryDemo = Functions.getQueryParams("demo", document.location);
+        let queryCors = Functions.getQueryParams("cors", document.location);
         
         if (queryDemo) {
             switch (queryDemo) {
