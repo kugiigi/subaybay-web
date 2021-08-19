@@ -50,7 +50,7 @@ var App = {
         }
         
         // Check Qurrery Strings
-        let queryDBUrl = Functions.getQueryParams("dbsource", document.location);
+        let queryDBUrl = encodeURI(Functions.getQueryParams("dbsource", document.location));
         let queryDemo = Functions.getQueryParams("demo", document.location);
         let queryCors = Functions.getQueryParams("cors", document.location);
         
