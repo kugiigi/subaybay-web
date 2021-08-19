@@ -1,6 +1,5 @@
 //~ $(function() {
 $(document).ready(function(){
-    //~ $('#criteria_button').datepicker();
     $('.datepicker').datepicker();
     App.init();
 });
@@ -39,16 +38,48 @@ var App = {
 
         // Restore local storage values
         if (localStorage.getItem("corsEnabled") === "true") {
-            App.setCors(true);
+            App.setCors(false);
         }
 
         if (localStorage.getItem("demoMode") === "true") {
-            App.setDemoMode(true);
+            App.setDemoMode(false);
         }
         
         if (localStorage.databaseUrl) { 
             $(App.constants.DATABASE_URL).val(localStorage.databaseUrl)
         }
+        
+        // Check Qurrery Strings
+        let queryDBUrl = Functions.getQueryParams("dbsource", doucment.location);
+        let queryDemo = Functions.getQueryParams("demo", doucment.location);
+        let queryCors = Functions.getQueryParams("cors", doucment.location);
+        
+        if (queryDemo) {
+            switch (queryDemo) {
+               case "Y":
+                    App.setDemoMode(true);
+                    break;
+               case "N"
+                    App.setDemoMode(false);
+                    break;
+            }
+        }
+
+        if (queryCors) {
+            switch (queryCors) {
+               case "Y":
+                    App.setCors(true);
+                    break;
+               case "N"
+                    App.setCors(false);
+                    break;
+            }
+        }
+
+        if (queryDBUrl) {
+            $(App.constants.DATABASE_URL).val(queryDBUrl)
+        }
+        
 
         // Setup Sql Database
         this.setupDBObserver();
