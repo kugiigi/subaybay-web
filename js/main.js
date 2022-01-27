@@ -283,7 +283,6 @@ var App = {
                         if (mutation.type === "attributes") {
                             switch(mutation.attributeName) {
                                 case "data-date": 
-                                    //~ console.log(mutation)
                                     App.listPage.setDateLabel(new Date(mutation.target.dataset.date))
                                     if (Database.db) {
                                         App.listPage.listValues()
@@ -358,7 +357,6 @@ var App = {
             let _comments = ""
 
             for (let i = 0; i < _valuesList.length; i++) {
-                //~ console.log(_valuesList[i])
                 _currentTime = _valuesList[i].entryDate;
                 _itemName = _valuesList[i].itemName;
                 _value = _valuesList[i].values;
@@ -398,11 +396,6 @@ var App = {
 
 
 var container = $('#container');
-
-//~ $(document).on('click', '.list-view li', function(){
-  //~ $(this).addClass('active');
-  //~ container.addClass('details');
-//~ });
 
 $('.back').click(function(){
   container.removeClass('details');
