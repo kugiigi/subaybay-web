@@ -17,6 +17,7 @@ document.onkeyup = function(e) {
     }
 };
 
+
 var App = {
     constants: {
         CRITERIA_BUTTON: "#criteria_button"
@@ -111,6 +112,19 @@ var App = {
 
         // Set list page to today
         this.listPage.setDate(moment().format())
+
+        // Setup swipe detection for day navigation
+        var el = document.getElementById('container')
+        swipedetect(el, function(swipedir){
+            switch (swipedir) {
+                case "right":
+                    App.listPage.previousDay();
+                    break;
+                case "left":
+                    App.listPage.nextDay();
+                    break;
+            }
+        })
     },
     setupDBObserver: function() {
         var elementName = "database"
