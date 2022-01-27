@@ -112,7 +112,7 @@ var App = {
         this.listPage.setDate(moment().format())
 
         // Setup swipe detection for day navigation
-        var el = document.getElementById('main')
+        var el = document.getElementById('container')
         swipedetect(el, function(swipedir){
             switch (swipedir) {
                 case "right":
