@@ -700,7 +700,6 @@ body[db-ready] .mdl-layout__drawer > .mdl-layout__title
 }
 
 #container {
-    overflow: scroll;
     width: 100%;
     height: 100%;
 }
