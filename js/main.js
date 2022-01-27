@@ -7,11 +7,9 @@ $(document).ready(function(){
 document.onkeyup = function(e) {
     switch (e.which) {
         case 37:
-            console.log("prev!")
             App.listPage.previousDay();
             break;
         case 39:
-            console.log("next!")
             App.listPage.nextDay();
             break;
     }
