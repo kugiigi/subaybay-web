@@ -4,6 +4,19 @@ $(document).ready(function(){
     App.init();
 });
 
+document.onkeyup = function(e) {
+    switch (e.which) {
+        case 37:
+            console.log("prev!")
+            App.listPage.previousDay();
+            break;
+        case 39:
+            console.log("next!")
+            App.listPage.nextDay();
+            break;
+    }
+};
+
 var App = {
     constants: {
         CRITERIA_BUTTON: "#criteria_button"
