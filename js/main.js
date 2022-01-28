@@ -1,6 +1,7 @@
 //~ $(function() {
 $(document).ready(function(){
     $('.datepicker').datepicker();
+    $('.modal').modal({dismissible: false});
     App.init();
 });
 
@@ -15,7 +16,6 @@ document.onkeyup = function(e) {
     }
 };
 
-
 var App = {
     constants: {
         CRITERIA_BUTTON: "#criteria_button"
@@ -26,11 +26,13 @@ var App = {
         , PROFILES_LIST: ".mdl-layout__drawer .mdl-navigation"
         , PROFILE_TITLE: ".persona-header .persona-title.mdl-layout-title"
         , PROFILE_ACTIVE: ".mdl-layout__drawer .mdl-navigation .mdl-navigation__link.active"
+        , FILTER_LIST: "#filterModal .modal-content .filter-content"
         , VALUES_LIST: ".mdl-layout__content .list-view ul"
         , LIST_CONTAINER: "#container"
         , DATABASE_URL: "#database_url"
         , DEMO_URL: "https://github.com/kugiigi/subaybay-web/raw/main/demo/8df23b9827c6d1d8e6f53ae822fa4f0a.sqlite"
     },
+    filterCSS: null,
     init: function() {
         // For testing only
         //~ this.clearLocalStorage();
@@ -46,6 +48,10 @@ var App = {
 
         if (localStorage.getItem("corsEnabled") === null) {
             localStorage.corsEnabled = false;
+        }
+
+        if (localStorage.getItem("hiddenFilter") === null) {
+            localStorage.hiddenFilter = "";
         }
 
         // Restore local storage values
@@ -123,6 +129,9 @@ var App = {
                     break;
             }
         })
+
+        // Setup filter CSS
+        App.listPage.setupFilter();
     },
     setupDBObserver: function() {
         var elementName = "database"
@@ -134,6 +143,8 @@ var App = {
                     if (mutation.type === "attributes" && mutation.attributeName === "db-ready") {
                         App.listProfiles();
                         App.listPage.listValues()
+                        App.listPage.listFilterItems()
+                        
                     }
                 }
             });
@@ -310,6 +321,78 @@ var App = {
             // Clear list
             $(App.constants.VALUES_LIST).empty();
         },
+        setupFilter: function() {
+            App.filterCSS = document.createElement("style");
+            document.head.appendChild(App.filterCSS);
+            this.applyFilter();
+        },
+        selectAllFilter: function() {
+            $("#filterModal [type='checkbox']").each(function() {
+                $(this).prop('checked', true)
+            });
+        },
+        listFilterItems: function() {
+            // Clear filter list
+            $(App.constants.FILTER_LIST).empty();
+
+            let _monitorList = DataUtils.monitoritems.list();
+            let _checkedProp = "";
+            let _currentFilterArr = localStorage.hiddenFilter.split(",");
+
+            for (let i = 0; i < _monitorList.length; i++) {
+                let _displayName = _monitorList[i].display_name;
+                let _itemId = _monitorList[i].item_id;
+
+                if ($.inArray(_itemId, _currentFilterArr) != -1) {
+                    _checkedProp = ""
+                } else {
+                    _checkedProp = "checked='checked'"
+                }
+
+                let _htmlCode = "<p><label><input type='checkbox' " + _checkedProp + " item-type='" + _itemId + "' /> " + _displayName + " </label></p>";
+
+                $(App.constants.FILTER_LIST).append(_htmlCode);
+            }
+        },
+        cancelFilter: function () {
+            this.selectAllFilter();
+            $.each(localStorage.hiddenFilter.split(","), function() {
+                $("input[type='checkbox'][item-type='" + this.toString() + "']").prop('checked', false)
+            });
+        },
+        setFilter: function () {
+            let filterList = ""
+
+            $("#filterModal [type='checkbox']").each(function() {
+                if ($(this).prop('checked') == false) {
+                    if (filterList == "") {
+                        filterList = $(this).attr("item-type")
+                    } else {
+                        filterList = filterList + "," + $(this).attr("item-type")
+                    }
+                }
+            });
+
+            localStorage.hiddenFilter = filterList
+        },
+        applyFilter: function () {
+            let filterClasses = ""
+            if (App.filterCSS.sheet.cssRules.length > 0) { 
+                App.filterCSS.sheet.deleteRule(0)
+            }
+            console.log(localStorage.hiddenFilter)
+            if (localStorage.hiddenFilter.length > 0 ) {
+                $.each(localStorage.hiddenFilter.split(","), function() {
+                    if (filterClasses == "") {
+                        filterClasses = "." + this.toString()
+                    } else {
+                        filterClasses = filterClasses + ",." + this.toString()
+                    }
+                });
+                App.filterCSS.sheet.insertRule(filterClasses + " { display: none !important;}", 0);
+            }
+
+        },
         getDate: function() {
             return $(App.constants.CRITERIA_BUTTON).attr("data-date")
         },
@@ -334,6 +417,10 @@ var App = {
             var prevDay = Functions.subtractDays(new Date(currentDay), 1)
             App.listPage.setDate(prevDay)
         },
+        openFilter: function() {
+            var filterModal = M.Modal.getInstance($('#filterModal'))
+            filterModal.open()
+        },
         listValues: function() {
             App.listPage.reset();
             // Reset container
@@ -351,6 +438,7 @@ var App = {
             let _prevTime = ""
             let _currentTime = ""
             let _sectionHtml = ""
+            let _itemId = ""
             let _itemName = ""
             let _value = ""
             let _unit = ""
@@ -358,6 +446,7 @@ var App = {
 
             for (let i = 0; i < _valuesList.length; i++) {
                 _currentTime = _valuesList[i].entryDate;
+                _itemId = _valuesList[i].itemId;
                 _itemName = _valuesList[i].itemName;
                 _value = _valuesList[i].values;
                 _unit = _valuesList[i].unit;
@@ -368,7 +457,7 @@ var App = {
                     _valuesListObj.append(_sectionHtml);
                 }
 
-                let _htmlCode = "<li class=item'>"
+                let _htmlCode = "<li class='item " + _itemId + "'>"
                                     + "<span class='left item-label'>" + _itemName + "</span>"
                                     + "<span class='right'>"
                                         + "<div class='value'>"

@@ -40,6 +40,19 @@
             <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"></circle>
         </svg>
     </div>
+    
+    <!-- Filter Modal -->
+    <div id="filterModal" class="modal">
+        <div class="modal-content">
+            <h4>Filter by type</h4>
+            <div class="filter-content"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="waves-effect waves-teal btn-flat left-modal-btn" onclick="App.listPage.selectAllFilter();" class="modal-close waves-effect waves-green btn-flat">Select All</button>
+            <a onclick="App.listPage.setFilter(); App.listPage.applyFilter();" class="modal-close waves-effect waves-green btn-flat">Apply</a>
+            <a onclick="App.listPage.cancelFilter()" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+        </div>
+    </div>
 
     <!-- Layout Wrapper -->
     <div id="main" class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
@@ -57,7 +70,7 @@
                 <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
                     <li class="mdl-menu__item" onclick="App.updateData();"><i class="material-icons">refresh</i><span>Refresh Data</span></li>
                     <li class="mdl-menu__item" onclick="App.listPage.setDate(moment().format())"><i class="material-icons">today</i><span>View Today</span></li>
-                    <li class="mdl-menu__item"><i class="material-icons">filter_list</i><span>Filter</span></li>
+                    <li class="mdl-menu__item" onclick="App.listPage.openFilter();"><i class="material-icons">filter_list</i><span>Filter</span></li>
                 </ul>
             </div>
             <div class="navigation-row">

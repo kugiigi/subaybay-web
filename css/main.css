@@ -811,3 +811,20 @@ body[db-ready] .mdl-layout__drawer > .mdl-layout__title
 #container .list-view ul li .right div {
     text-align: right;
 }
+
+/* Filter Checkbox */
+#filterModal label {
+    font-size: 20px;
+}
+
+#filterModal [type="checkbox"] {
+    height: 20px;
+    width: 20px;
+    vertical-align: text-top;
+}
+
+/* Left float modal buttons */
+.modal .modal-footer .btn-flat.left-modal-btn {
+    float: left;
+    color: #1e88e5;
+}

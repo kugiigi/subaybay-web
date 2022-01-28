@@ -5631,12 +5631,14 @@ textarea.materialize-textarea {
     background-color: rgba(0, 0, 0, 0.42);
     border-color: #949494;
 }
+/*
 [type="checkbox"]:not(:checked),
 [type="checkbox"]:checked {
     position: absolute;
     opacity: 0;
     pointer-events: none;
 }
+*/
 /*
 [type="checkbox"] + span:not(.lever) {
     position: relative;
@@ -7517,4 +7519,20 @@ input[type="range"]::-ms-thumb {
         text-align: center;
         margin-top: 1.2rem;
     }
+}
+
+/* Dark skin for Modal */
+#filterModal
+,.modal .modal-footer {
+    background-color: #212121;
+}
+
+@media only screen and (min-width: 992px) {
+    .modal {
+        width: 35%;
+    }
+}
+
+.modal .modal-footer .btn-flat {
+    color: #ffffff;
 }
