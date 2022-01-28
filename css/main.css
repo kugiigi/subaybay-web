@@ -761,7 +761,10 @@ body[db-ready] .mdl-layout__drawer > .mdl-layout__title
 }
 
 #container .list-view ul li {
+/*
     display: inline-block;
+*/
+    display: none;
     left: 0;
     right: 0;
     width: 100%;
@@ -827,4 +830,10 @@ body[db-ready] .mdl-layout__drawer > .mdl-layout__title
 .modal .modal-footer .btn-flat.left-modal-btn {
     float: left;
     color: #1e88e5;
+}
+
+/* Toast types */
+.toast-error {
+    background-color: #ef5350;
+    font-weight: bold;
 }

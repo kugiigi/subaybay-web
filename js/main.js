@@ -50,8 +50,8 @@ var App = {
             localStorage.corsEnabled = false;
         }
 
-        if (localStorage.getItem("hiddenFilter") === null) {
-            localStorage.hiddenFilter = "";
+        if (localStorage.getItem("filterList") === null) {
+            localStorage.filterList = "";
         }
 
         // Restore local storage values
@@ -325,6 +325,18 @@ var App = {
             App.filterCSS = document.createElement("style");
             document.head.appendChild(App.filterCSS);
             this.applyFilter();
+            
+        },
+        openFilter: function() {
+            if (localStorage.filterList.length == 0 ) {
+                this.selectAllFilter();
+            }
+            var filterModal = M.Modal.getInstance($('#filterModal'))
+            filterModal.open()
+        },
+        closeFilter: function() {
+            var filterModal = M.Modal.getInstance($('#filterModal'))
+            filterModal.close()
         },
         selectAllFilter: function() {
             $("#filterModal [type='checkbox']").each(function() {
@@ -337,16 +349,16 @@ var App = {
 
             let _monitorList = DataUtils.monitoritems.list();
             let _checkedProp = "";
-            let _currentFilterArr = localStorage.hiddenFilter.split(",");
+            let _currentFilterArr = localStorage.filterList.split(",");
 
             for (let i = 0; i < _monitorList.length; i++) {
                 let _displayName = _monitorList[i].display_name;
                 let _itemId = _monitorList[i].item_id;
 
                 if ($.inArray(_itemId, _currentFilterArr) != -1) {
-                    _checkedProp = ""
-                } else {
                     _checkedProp = "checked='checked'"
+                } else {
+                    _checkedProp = ""
                 }
 
                 let _htmlCode = "<p><label><input type='checkbox' " + _checkedProp + " item-type='" + _itemId + "' /> " + _displayName + " </label></p>";
@@ -355,43 +367,58 @@ var App = {
             }
         },
         cancelFilter: function () {
-            this.selectAllFilter();
-            $.each(localStorage.hiddenFilter.split(","), function() {
-                $("input[type='checkbox'][item-type='" + this.toString() + "']").prop('checked', false)
+            $("#filterModal [type='checkbox']").each(function() {
+                $(this).prop('checked', false)
+            });
+            $.each(localStorage.filterList.split(","), function() {
+                $("input[type='checkbox'][item-type='" + this.toString() + "']").prop('checked', true)
             });
         },
         setFilter: function () {
             let filterList = ""
+            let checkedCount = $("#filterModal [type='checkbox']:checked").length
 
-            $("#filterModal [type='checkbox']").each(function() {
-                if ($(this).prop('checked') == false) {
-                    if (filterList == "") {
-                        filterList = $(this).attr("item-type")
-                    } else {
-                        filterList = filterList + "," + $(this).attr("item-type")
+            $('.toast').hide();
+
+            if (checkedCount > 0) {
+                $("#filterModal [type='checkbox']").each(function() {
+                    if ($(this).prop('checked')) {
+                        if (filterList == "") {
+                            filterList = $(this).attr("item-type")
+                        } else {
+                            filterList = filterList + "," + $(this).attr("item-type")
+                        }
                     }
-                }
-            });
+                });
 
-            localStorage.hiddenFilter = filterList
+                localStorage.filterList = filterList
+                this.applyFilter();
+            } else {
+                M.toast({html: 'Select at least one',classes: "toast-error",displayLength: 10000})
+            }
         },
         applyFilter: function () {
             let filterClasses = ""
+            let filterClass = ""
             if (App.filterCSS.sheet.cssRules.length > 0) { 
                 App.filterCSS.sheet.deleteRule(0)
             }
-            console.log(localStorage.hiddenFilter)
-            if (localStorage.hiddenFilter.length > 0 ) {
-                $.each(localStorage.hiddenFilter.split(","), function() {
+
+            if (localStorage.filterList.length > 0 ) {
+                $.each(localStorage.filterList.split(","), function() {
+                    filterClass = "#container .list-view ul li." + this.toString()
                     if (filterClasses == "") {
-                        filterClasses = "." + this.toString()
+                        filterClasses = filterClass
                     } else {
-                        filterClasses = filterClasses + ",." + this.toString()
+                        filterClasses = filterClasses + "," + filterClass
                     }
                 });
-                App.filterCSS.sheet.insertRule(filterClasses + " { display: none !important;}", 0);
+                App.filterCSS.sheet.insertRule(filterClasses + " { display: inline-block !important;}", 0);
+            } else {
+                filterClasses = "#container .list-view ul li"
+                App.filterCSS.sheet.insertRule(filterClasses + " { display: inline-block !important;}", 0);
             }
-
+            this.closeFilter();
         },
         getDate: function() {
             return $(App.constants.CRITERIA_BUTTON).attr("data-date")
@@ -417,10 +444,6 @@ var App = {
             var prevDay = Functions.subtractDays(new Date(currentDay), 1)
             App.listPage.setDate(prevDay)
         },
-        openFilter: function() {
-            var filterModal = M.Modal.getInstance($('#filterModal'))
-            filterModal.open()
-        },
         listValues: function() {
             App.listPage.reset();
             // Reset container
@@ -443,6 +466,8 @@ var App = {
             let _value = ""
             let _unit = ""
             let _comments = ""
+            let _last_section_index = 0
+            let _item_count = 0
 
             for (let i = 0; i < _valuesList.length; i++) {
                 _currentTime = _valuesList[i].entryDate;
@@ -453,8 +478,13 @@ var App = {
                 _comments = _valuesList[i].comments;
 
                 if (_prevTime !== _currentTime) {
-                    _sectionHtml = "<li class='list-section'><span class='left date-label'>" + _currentTime + "</span></li>"
+                    _sectionItemClasses = [];
+                    _sectionHtml = "<li class='list-section " + _itemId + "'><span class='left date-label'>" + _currentTime + "</span></li>"
                     _valuesListObj.append(_sectionHtml);
+                    _item_count = _item_count + 1;
+                    _last_section_index = _item_count;
+                } else {
+                    $("#container .list-view li.list-section:nth-of-type(" + _last_section_index + ")").addClass(_itemId);
                 }
 
                 let _htmlCode = "<li class='item " + _itemId + "'>"
@@ -469,6 +499,7 @@ var App = {
                                 + "</li>"
                 ;
                 _valuesListObj.append(_htmlCode);
+                _item_count = _item_count + 1;
 
                 _prevTime = _currentTime;
             }

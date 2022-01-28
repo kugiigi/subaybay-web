@@ -48,8 +48,11 @@
             <div class="filter-content"></div>
         </div>
         <div class="modal-footer">
-            <button class="waves-effect waves-teal btn-flat left-modal-btn" onclick="App.listPage.selectAllFilter();" class="modal-close waves-effect waves-green btn-flat">Select All</button>
+            <button class="waves-effect waves-teal btn-flat left-modal-btn" onclick="App.listPage.selectAllFilter();" >Select All</button>
+            <button class="waves-effect waves-teal btn-flat"onclick="App.listPage.setFilter();" class="modal-close waves-effect waves-green btn-flat">Apply</button>
+<!--
             <a onclick="App.listPage.setFilter(); App.listPage.applyFilter();" class="modal-close waves-effect waves-green btn-flat">Apply</a>
+-->
             <a onclick="App.listPage.cancelFilter()" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
         </div>
     </div>
