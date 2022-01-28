@@ -826,6 +826,16 @@ body[db-ready] .mdl-layout__drawer > .mdl-layout__title
     vertical-align: text-top;
 }
 
+/* Filter icon */
+#filteredIcon.show
+,span.persona-title {
+    display: inline;
+}
+
+#filteredIcon.hide {
+    display: none;
+}
+
 /* Left float modal buttons */
 .modal .modal-footer .btn-flat.left-modal-btn {
     float: left;

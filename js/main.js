@@ -129,9 +129,6 @@ var App = {
                     break;
             }
         })
-
-        // Setup filter CSS
-        App.listPage.setupFilter();
     },
     setupDBObserver: function() {
         var elementName = "database"
@@ -284,6 +281,7 @@ var App = {
         localStorage.databaseUrl = __dbUrl;
     },
     listPage: {
+        monitorList: null,
         setupDateObserver: function() {
             var elementName = "date"
             var targetNode = document.querySelector(App.constants.CRITERIA_BUTTON);
@@ -347,13 +345,13 @@ var App = {
             // Clear filter list
             $(App.constants.FILTER_LIST).empty();
 
-            let _monitorList = DataUtils.monitoritems.list();
+            this.monitorList = DataUtils.monitoritems.list();
             let _checkedProp = "";
             let _currentFilterArr = localStorage.filterList.split(",");
 
-            for (let i = 0; i < _monitorList.length; i++) {
-                let _displayName = _monitorList[i].display_name;
-                let _itemId = _monitorList[i].item_id;
+            for (let i = 0; i < this.monitorList.length; i++) {
+                let _displayName = this.monitorList[i].display_name;
+                let _itemId = this.monitorList[i].item_id;
 
                 if ($.inArray(_itemId, _currentFilterArr) != -1) {
                     _checkedProp = "checked='checked'"
@@ -365,6 +363,9 @@ var App = {
 
                 $(App.constants.FILTER_LIST).append(_htmlCode);
             }
+
+            // Setup filter CSS
+            App.listPage.setupFilter();
         },
         cancelFilter: function () {
             $("#filterModal [type='checkbox']").each(function() {
@@ -417,6 +418,17 @@ var App = {
             } else {
                 filterClasses = "#container .list-view ul li"
                 App.filterCSS.sheet.insertRule(filterClasses + " { display: inline-block !important;}", 0);
+            }
+
+            /* Show a filter icon to notify user the list is filtered */
+            let _filterListArr = localStorage.filterList.split(",");
+            if (this.monitorList.length !== _filterListArr.length
+                    && localStorage.filterList.length > 0) {
+                $("#filteredIcon").removeClass("hide");
+                $("#filteredIcon").addClass("show");
+            } else {
+                $("#filteredIcon").removeClass("show");
+                $("#filteredIcon").addClass("hide");
             }
             this.closeFilter();
         },
