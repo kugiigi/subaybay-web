@@ -1,8 +1,20 @@
 //~ $(function() {
 $(document).ready(function(){
     $('.datepicker').datepicker();
+    $('.modal').modal({dismissible: false});
     App.init();
 });
+
+document.onkeyup = function(e) {
+    switch (e.which) {
+        case 37:
+            App.listPage.previousDay();
+            break;
+        case 39:
+            App.listPage.nextDay();
+            break;
+    }
+};
 
 var App = {
     constants: {
@@ -14,11 +26,14 @@ var App = {
         , PROFILES_LIST: ".mdl-layout__drawer .mdl-navigation"
         , PROFILE_TITLE: ".persona-header .persona-title.mdl-layout-title"
         , PROFILE_ACTIVE: ".mdl-layout__drawer .mdl-navigation .mdl-navigation__link.active"
+        , FILTER_LIST: "#filterModal .modal-content .filter-content"
+        , VALUES_VIEW: "#listview"
         , VALUES_LIST: ".mdl-layout__content .list-view ul"
         , LIST_CONTAINER: "#container"
         , DATABASE_URL: "#database_url"
-        , DEMO_URL: "https://github.com/kugiigi/subaybay-web/raw/main/demo/8df23b9827c6d1d8e6f53ae822fa4f0a.sqlite"
+        , DEMO_URL: "https://subaybay.kugiverse.com/demo/8df23b9827c6d1d8e6f53ae822fa4f0a.sqlite"
     },
+    filterCSS: null,
     init: function() {
         // For testing only
         //~ this.clearLocalStorage();
@@ -34,6 +49,10 @@ var App = {
 
         if (localStorage.getItem("corsEnabled") === null) {
             localStorage.corsEnabled = false;
+        }
+
+        if (localStorage.getItem("filterList") === null) {
+            localStorage.filterList = "";
         }
 
         // Restore local storage values
@@ -98,6 +117,19 @@ var App = {
 
         // Set list page to today
         this.listPage.setDate(moment().format())
+
+        // Setup swipe detection for day navigation
+        var el = document.getElementById('container')
+        swipedetect(el, function(swipedir){
+            switch (swipedir) {
+                case "right":
+                    App.listPage.previousDay();
+                    break;
+                case "left":
+                    App.listPage.nextDay();
+                    break;
+            }
+        })
     },
     setupDBObserver: function() {
         var elementName = "database"
@@ -109,6 +141,8 @@ var App = {
                     if (mutation.type === "attributes" && mutation.attributeName === "db-ready") {
                         App.listProfiles();
                         App.listPage.listValues()
+                        App.listPage.listFilterItems()
+                        
                     }
                 }
             });
@@ -248,6 +282,7 @@ var App = {
         localStorage.databaseUrl = __dbUrl;
     },
     listPage: {
+        monitorList: null,
         setupDateObserver: function() {
             var elementName = "date"
             var targetNode = document.querySelector(App.constants.CRITERIA_BUTTON);
@@ -258,7 +293,6 @@ var App = {
                         if (mutation.type === "attributes") {
                             switch(mutation.attributeName) {
                                 case "data-date": 
-                                    //~ console.log(mutation)
                                     App.listPage.setDateLabel(new Date(mutation.target.dataset.date))
                                     if (Database.db) {
                                         App.listPage.listValues()
@@ -285,6 +319,119 @@ var App = {
 
             // Clear list
             $(App.constants.VALUES_LIST).empty();
+        },
+        setupFilter: function() {
+            App.filterCSS = document.createElement("style");
+            document.head.appendChild(App.filterCSS);
+            this.applyFilter();
+            
+        },
+        openFilter: function() {
+            if (localStorage.filterList.length == 0 ) {
+                this.selectAllFilter();
+            }
+            var filterModal = M.Modal.getInstance($('#filterModal'))
+            filterModal.open()
+        },
+        closeFilter: function() {
+            var filterModal = M.Modal.getInstance($('#filterModal'))
+            filterModal.close()
+        },
+        selectAllFilter: function() {
+            $("#filterModal [type='checkbox']").each(function() {
+                $(this).prop('checked', true)
+            });
+        },
+        listFilterItems: function() {
+            // Clear filter list
+            $(App.constants.FILTER_LIST).empty();
+
+            this.monitorList = DataUtils.monitoritems.list();
+            let _checkedProp = "";
+            let _currentFilterArr = localStorage.filterList.split(",");
+
+            for (let i = 0; i < this.monitorList.length; i++) {
+                let _displayName = this.monitorList[i].display_name;
+                let _itemId = this.monitorList[i].item_id;
+
+                if ($.inArray(_itemId, _currentFilterArr) != -1) {
+                    _checkedProp = "checked='checked'"
+                } else {
+                    _checkedProp = ""
+                }
+
+                let _htmlCode = "<p><label><input type='checkbox' " + _checkedProp + " item-type='" + _itemId + "' /> " + _displayName + " </label></p>";
+
+                $(App.constants.FILTER_LIST).append(_htmlCode);
+            }
+
+            // Setup filter CSS
+            App.listPage.setupFilter();
+        },
+        cancelFilter: function () {
+            $("#filterModal [type='checkbox']").each(function() {
+                $(this).prop('checked', false)
+            });
+            $.each(localStorage.filterList.split(","), function() {
+                $("input[type='checkbox'][item-type='" + this.toString() + "']").prop('checked', true)
+            });
+        },
+        setFilter: function () {
+            let filterList = ""
+            let checkedCount = $("#filterModal [type='checkbox']:checked").length
+
+            $('.toast').hide();
+
+            if (checkedCount > 0) {
+                $("#filterModal [type='checkbox']").each(function() {
+                    if ($(this).prop('checked')) {
+                        if (filterList == "") {
+                            filterList = $(this).attr("item-type")
+                        } else {
+                            filterList = filterList + "," + $(this).attr("item-type")
+                        }
+                    }
+                });
+
+                localStorage.filterList = filterList
+                this.applyFilter();
+            } else {
+                M.toast({html: 'Select at least one',classes: "toast-error",displayLength: 10000})
+            }
+        },
+        applyFilter: function () {
+            let filterClasses = ""
+            let filterClass = ""
+            if (App.filterCSS.sheet.cssRules.length > 0) { 
+                App.filterCSS.sheet.deleteRule(0)
+            }
+
+            if (localStorage.filterList.length > 0 ) {
+                $.each(localStorage.filterList.split(","), function() {
+                    filterClass = "#container .list-view ul li." + this.toString() + ", #container[data-ready]:not([no-data]) .list-view." + this.toString()
+                    if (filterClasses == "") {
+                        filterClasses = filterClass
+                    } else {
+                        filterClasses = filterClasses + "," + filterClass
+                    }
+                });
+                App.filterCSS.sheet.insertRule(filterClasses + " { display: inline-block !important;}", 0);
+            } else {
+                filterClasses = "#container[data-ready]:not([no-data]) .list-view, #container .list-view ul li"
+                App.filterCSS.sheet.insertRule(filterClasses + " { display: inline-block !important;}", 0);
+            }
+
+            /* Show a filter icon to notify user the list is filtered */
+            let _filterListArr = localStorage.filterList.split(",");
+            if (this.monitorList.length !== _filterListArr.length
+                    && localStorage.filterList.length > 0) {
+                $("#filteredIcon").removeClass("hide");
+                $("#filteredIcon").addClass("show");
+            } else {
+                $("#filteredIcon").removeClass("show");
+                $("#filteredIcon").addClass("hide");
+            }
+            this.closeFilter();
         },
         getDate: function() {
             return $(App.constants.CRITERIA_BUTTON).attr("data-date")
@@ -327,26 +474,37 @@ var App = {
             let _prevTime = ""
             let _currentTime = ""
             let _sectionHtml = ""
+            let _itemId = ""
             let _itemName = ""
             let _value = ""
             let _unit = ""
             let _comments = ""
+            let _last_section_index = 0
+            let _item_count = 0
+            let _itemsArr = []
 
             for (let i = 0; i < _valuesList.length; i++) {
-                //~ console.log(_valuesList[i])
                 _currentTime = _valuesList[i].entryDate;
+                _itemId = _valuesList[i].itemId;
                 _itemName = _valuesList[i].itemName;
                 _value = _valuesList[i].values;
                 _unit = _valuesList[i].unit;
                 _comments = _valuesList[i].comments;
+                
+                _itemsArr.push(_itemId);
 
                 if (_prevTime !== _currentTime) {
-                    _sectionHtml = "<li class='list-section'><span class='left date-label'>" + _currentTime + "</span></li>"
+                    _sectionItemClasses = [];
+                    _sectionHtml = "<li class='list-section " + _itemId + "'><span class='left date-label'>" + _currentTime + "</span></li>"
                     _valuesListObj.append(_sectionHtml);
+                    _item_count = _item_count + 1;
+                    _last_section_index = _item_count;
+                } else {
+                    $("#container .list-view li.list-section:nth-of-type(" + _last_section_index + ")").addClass(_itemId);
                 }
 
-                let _htmlCode = "<li class=item'>"
-                                    + "<span class='left item-label'>" + _itemName + "</span>"
+                let _htmlCode = "<li class='item " + _itemId + "'>"
+                                    + "<span class='left item-label'>"  + _itemName + "</span>"
                                     + "<span class='right'>"
                                         + "<div class='value'>"
                                             + "<span class='value value-label'>" + _value + "</span>"
@@ -357,9 +515,19 @@ var App = {
                                 + "</li>"
                 ;
                 _valuesListObj.append(_htmlCode);
+                _item_count = _item_count + 1;
 
                 _prevTime = _currentTime;
             }
+            
+            // Set classes to the list view
+            $(App.constants.VALUES_VIEW).removeClass();
+            $(App.constants.VALUES_VIEW).addClass("list-view");
+
+            $.each(_itemsArr, function() {
+                $(App.constants.VALUES_VIEW).addClass(this.toString());
+            });
+            
             
             // Set main container attributes as basis when data is ready
             $(App.constants.LIST_CONTAINER).attr("data-ready", "")
@@ -373,11 +541,6 @@ var App = {
 
 
 var container = $('#container');
-
-//~ $(document).on('click', '.list-view li', function(){
-  //~ $(this).addClass('active');
-  //~ container.addClass('details');
-//~ });
 
 $('.back').click(function(){
   container.removeClass('details');

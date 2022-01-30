@@ -68,4 +68,16 @@ var Database = {
 
         return _arrResults
     }
+    
+    , getMonitorItems: function () {
+        var _arrResults = []
+
+        _arrResults = this.select("SELECT items.item_id, items.display_name, items.descr \
+                  , items.display_format, items.unit, units.display_symbol \
+                  FROM monitor_items items \
+                  LEFT OUTER JOIN units units ON items.unit = units.name \
+                  ORDER BY items.display_name asc")
+
+        return _arrResults
+    }
 };

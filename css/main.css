@@ -713,8 +713,16 @@ body[db-ready] .mdl-layout__drawer > .mdl-layout__title
     display: block;
 }
 
+#container[data-ready] .list-no-data {
+    display: block;
+}
+
 #container .list-no-data {
     display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
 }
 
 #container .list-no-data span {
@@ -755,13 +763,20 @@ body[db-ready] .mdl-layout__drawer > .mdl-layout__title
     background: none;
 }
 
-#container .list-view { 
+#container .list-view {
+    display: none;
     z-index: 1;
     transition: background 0.3s 0.1s;
+    background: #111111;
+    height: 100%;
+    width: 100%;
 }
 
 #container .list-view ul li {
+/*
     display: inline-block;
+*/
+    display: none;
     left: 0;
     right: 0;
     width: 100%;
@@ -810,4 +825,45 @@ body[db-ready] .mdl-layout__drawer > .mdl-layout__title
 
 #container .list-view ul li .right div {
     text-align: right;
+}
+
+/* Filter Checkbox */
+#filterModal label {
+    font-size: 20px;
+}
+
+#filterModal [type="checkbox"] {
+    height: 20px;
+    width: 20px;
+    vertical-align: text-top;
+}
+
+/* Filter icon */
+#filteredIcon {
+    padding: 0;
+}
+
+#filteredIcon i {
+    font-size: 2rem;
+}
+
+#filteredIcon.show
+,span.persona-title {
+    display: inline;
+}
+
+#filteredIcon.hide {
+    display: none;
+}
+
+/* Left float modal buttons */
+.modal .modal-footer .btn-flat.left-modal-btn {
+    float: left;
+    color: #1e88e5;
+}
+
+/* Toast types */
+.toast-error {
+    background-color: #ef5350;
+    font-weight: bold;
 }

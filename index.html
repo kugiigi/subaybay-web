@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     
     <script src="js/main.js"></script>
+    <script src="js/swipe.js"></script>
     <script src="js/functions.js"></script>
     <script src="js/database.js"></script>
     <script src="js/dataUtils.js"></script>
@@ -39,15 +40,30 @@
             <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"></circle>
         </svg>
     </div>
+    
+    <!-- Filter Modal -->
+    <div id="filterModal" class="modal">
+        <div class="modal-content">
+            <h4>Filter by type</h4>
+            <div class="filter-content"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="waves-effect waves-teal btn-flat left-modal-btn" onclick="App.listPage.selectAllFilter();" >Select All</button>
+            <button class="waves-effect waves-teal btn-flat"onclick="App.listPage.setFilter();" class="modal-close waves-effect waves-green btn-flat">Apply</button>
+            <a onclick="App.listPage.cancelFilter()" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+        </div>
+    </div>
 
     <!-- Layout Wrapper -->
-    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <div id="main" class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 
         <header class="persona-header mdl-layout__header">
             <div class="mdl-layout__header-row">
-                <!-- Title -->
-                <span class="persona-title mdl-layout-title"><-- Set database source</span>
-
+                <div class="persona-title">
+                    <!-- Title -->
+                    <span class="persona-title mdl-layout-title"><-- Set database source</span>
+                    <button id="filteredIcon" class="btn-flat" onclick="App.listPage.openFilter();"><i class="material-icons">filter_list</i></button>
+                </div>
                 <!-- Ellipses -->
                 <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
                     <i class="material-icons">more_vert</i>
@@ -56,14 +72,10 @@
                 <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
                     <li class="mdl-menu__item" onclick="App.updateData();"><i class="material-icons">refresh</i><span>Refresh Data</span></li>
                     <li class="mdl-menu__item" onclick="App.listPage.setDate(moment().format())"><i class="material-icons">today</i><span>View Today</span></li>
-                    <li class="mdl-menu__item"><i class="material-icons">filter_list</i><span>Filter</span></li>
+                    <li class="mdl-menu__item" onclick="App.listPage.openFilter();"><i class="material-icons">filter_list</i><span>Filter</span></li>
                 </ul>
             </div>
             <div class="navigation-row">
-<!--
-                    <label for="">Date</label>
-                    <input type="text" class="datepicker">
--->
                     <button id="criteria_button" class="datepicker mdl-button mdl-js-button mdl-button--icon date-label" data-date="">
                     </button>
                     <button id="prev_button" class="mdl-button mdl-js-button mdl-button--icon" onclick="App.listPage.previousDay();">
@@ -94,7 +106,6 @@
             </div>
             <span class="mdl-layout-title">Profiles</span>
             <nav class="mdl-navigation">
-            <!--<a class="mdl-navigation__link active" href="">Default</a>-->
             </nav>
         </div>
         <!-- /Drawer -->
@@ -111,7 +122,7 @@
                 <div class="list-no-data">
                     <span>No data</span>
                 </div>
-                <div class="list-view">
+                <div id="listview" class="list-view">
                     <ul>
                         <li class="section">
                             <span class="left">03:11 PM</span>
