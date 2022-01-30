@@ -27,6 +27,7 @@ var App = {
         , PROFILE_TITLE: ".persona-header .persona-title.mdl-layout-title"
         , PROFILE_ACTIVE: ".mdl-layout__drawer .mdl-navigation .mdl-navigation__link.active"
         , FILTER_LIST: "#filterModal .modal-content .filter-content"
+        , VALUES_VIEW: "#listview"
         , VALUES_LIST: ".mdl-layout__content .list-view ul"
         , LIST_CONTAINER: "#container"
         , DATABASE_URL: "#database_url"
@@ -407,7 +408,7 @@ var App = {
 
             if (localStorage.filterList.length > 0 ) {
                 $.each(localStorage.filterList.split(","), function() {
-                    filterClass = "#container .list-view ul li." + this.toString()
+                    filterClass = "#container .list-view ul li." + this.toString() + ", #container[data-ready]:not([no-data]) .list-view." + this.toString()
                     if (filterClasses == "") {
                         filterClasses = filterClass
                     } else {
@@ -416,7 +417,7 @@ var App = {
                 });
                 App.filterCSS.sheet.insertRule(filterClasses + " { display: inline-block !important;}", 0);
             } else {
-                filterClasses = "#container .list-view ul li"
+                filterClasses = "#container[data-ready]:not([no-data]) .list-view, #container .list-view ul li"
                 App.filterCSS.sheet.insertRule(filterClasses + " { display: inline-block !important;}", 0);
             }
 
@@ -480,6 +481,7 @@ var App = {
             let _comments = ""
             let _last_section_index = 0
             let _item_count = 0
+            let _itemsArr = []
 
             for (let i = 0; i < _valuesList.length; i++) {
                 _currentTime = _valuesList[i].entryDate;
@@ -488,6 +490,8 @@ var App = {
                 _value = _valuesList[i].values;
                 _unit = _valuesList[i].unit;
                 _comments = _valuesList[i].comments;
+                
+                _itemsArr.push(_itemId);
 
                 if (_prevTime !== _currentTime) {
                     _sectionItemClasses = [];
@@ -500,7 +504,7 @@ var App = {
                 }
 
                 let _htmlCode = "<li class='item " + _itemId + "'>"
-                                    + "<span class='left item-label'>" + _itemName + "</span>"
+                                    + "<span class='left item-label'>"  + _itemName + "</span>"
                                     + "<span class='right'>"
                                         + "<div class='value'>"
                                             + "<span class='value value-label'>" + _value + "</span>"
@@ -515,6 +519,15 @@ var App = {
 
                 _prevTime = _currentTime;
             }
+            
+            // Set classes to the list view
+            $(App.constants.VALUES_VIEW).removeClass();
+            $(App.constants.VALUES_VIEW).addClass("list-view");
+
+            $.each(_itemsArr, function() {
+                $(App.constants.VALUES_VIEW).addClass(this.toString());
+            });
+            
             
             // Set main container attributes as basis when data is ready
             $(App.constants.LIST_CONTAINER).attr("data-ready", "")

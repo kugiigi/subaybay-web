@@ -50,9 +50,6 @@
         <div class="modal-footer">
             <button class="waves-effect waves-teal btn-flat left-modal-btn" onclick="App.listPage.selectAllFilter();" >Select All</button>
             <button class="waves-effect waves-teal btn-flat"onclick="App.listPage.setFilter();" class="modal-close waves-effect waves-green btn-flat">Apply</button>
-<!--
-            <a onclick="App.listPage.setFilter(); App.listPage.applyFilter();" class="modal-close waves-effect waves-green btn-flat">Apply</a>
--->
             <a onclick="App.listPage.cancelFilter()" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
         </div>
     </div>
@@ -65,7 +62,7 @@
                 <div class="persona-title">
                     <!-- Title -->
                     <span class="persona-title mdl-layout-title"><-- Set database source</span>
-                    <i id="filteredIcon" class="material-icons">filter_list</i>
+                    <button id="filteredIcon" class="btn-flat" onclick="App.listPage.openFilter();"><i class="material-icons">filter_list</i></button>
                 </div>
                 <!-- Ellipses -->
                 <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
