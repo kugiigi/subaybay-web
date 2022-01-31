@@ -773,9 +773,6 @@ body[db-ready] .mdl-layout__drawer > .mdl-layout__title
 }
 
 #container .list-view ul li {
-/*
-    display: inline-block;
-*/
     display: none;
     left: 0;
     right: 0;
